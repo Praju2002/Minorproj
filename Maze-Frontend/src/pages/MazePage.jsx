@@ -11,7 +11,7 @@ function MazePage() {
 
   const generateMaze = async () => {
     try {
-      const response = await axios.post('http://localhost:5003/api/generate', {
+      const response = await axios.post('http://localhost:3003/api/generate', {
         rows,
         cols,
         algorithm,

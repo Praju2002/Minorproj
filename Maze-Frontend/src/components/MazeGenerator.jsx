@@ -9,7 +9,7 @@ const MazeGenerator = () => {
 
   useEffect(() => {
     if (isGenerating) {
-      fetch('http://localhost:5003/api/generate')
+      fetch('http://localhost:3003/api/generate')
         .then(response => response.json())
         .then(data => {
           setMazeKruskal(data.mazeKruskal);

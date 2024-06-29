@@ -6,16 +6,16 @@ function MazeVisualizer() {
   const [currentStep, setCurrentStep] = useState(0);
   const [isGenerating, setIsGenerating] = useState(false);
   const [maze, setMaze] = useState([]);
-
+  
   useEffect(() => {
-    if (isGenerating && steps.length > 0) {
-      setMaze(steps[currentStep].maze);
+    if (steps.length > 0) {
+      setMaze(steps[currentStep]);
     }
-  }, [currentStep, isGenerating, steps]);
+  }, [currentStep, steps]);
 
   const fetchMazeSteps = async (algorithm) => {
     setIsGenerating(true);
-    const response = await fetch(`http://localhost:5003/api/generate-maze-step-by-step?algorithm=${algorithm}`);
+    const response = await fetch(`http://localhost:3003/api/generate-maze-step-by-step?algorithm=${algorithm}`);
     const data = await response.json();
     setSteps(data.steps);
     setCurrentStep(0);

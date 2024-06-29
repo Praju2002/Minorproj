@@ -6,7 +6,7 @@ function Homepage() {
   const [metrics, setMetrics] = useState(null);
 
   const generateMaze = async (algorithm) => {
-    const response = await fetch('http://localhost:5003/api/generate', {
+    const response = await fetch('http://localhost:3003/api/generate', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
