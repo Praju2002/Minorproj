@@ -1,4 +1,3 @@
-// src/utils/unionFind.js
 class UnionFind {
   constructor(size) {
     this.parent = Array.from({ length: size }, (_, i) => i);

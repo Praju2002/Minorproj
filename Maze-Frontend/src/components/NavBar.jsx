@@ -25,9 +25,6 @@ export default function NavBar() {
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             Maze App
           </Typography>
-          <Button color="inherit" component={Link} to="/">
-            Home
-          </Button>
           <Button color="inherit" component={Link} to="/maze">
             Maze
           </Button>

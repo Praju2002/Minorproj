@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { ThemeProvider, CssBaseline } from '@mui/material';
 import theme from './theme/theme';
 import RootLayout from './layout/RootLayout';
-import Homepage from './pages/HomePage';
+// import Homepage from './pages/HomePage';
 import MazeGenerator from './components/MazeGenerator';
 import MazeVisualizer from './components/MazeVisualizer';
 
@@ -14,7 +14,7 @@ function App() {
       <Router>
         <Routes>
           <Route path="/" element={<RootLayout />}>
-            <Route index element={<Homepage />} />
+            <Route index element={<MazeGenerator />} />
             <Route path="maze" element={<MazeGenerator />} />
             <Route path="maze-visualizer" element={<MazeVisualizer />} />
             <Route path="*" element={<h1>Page not found</h1>} />

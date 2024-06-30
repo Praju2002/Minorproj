@@ -1,5 +1,6 @@
 const { UnionFind } = require('./unionFind');
 
+// Utility function to shuffle an array
 function shuffleArray(array) {
   for (let i = array.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -8,14 +9,16 @@ function shuffleArray(array) {
   return array;
 }
 
+// Utility function to get the direction bitmask
 function getDirection(dr, dc) {
-  if (dr === -1) return 1;
-  if (dr === 1) return 2;
-  if (dc === -1) return 4;
-  if (dc === 1) return 8;
+  if (dr === -1) return 1; // Up
+  if (dr === 1) return 2;  // Down
+  if (dc === -1) return 4; // Left
+  if (dc === 1) return 8;  // Right
   return 0;
 }
 
+// Kruskal's Algorithm for maze generation
 function generateMazeKruskal(rows, cols) {
   const maze = Array.from({ length: rows }, () => Array(cols).fill(0));
   const walls = [];
@@ -46,6 +49,7 @@ function generateMazeKruskal(rows, cols) {
   return { maze, steps };
 }
 
+// Utility function to add walls around a cell
 function addWalls(r, c, walls, visited, rows, cols) {
   if (r > 0 && !visited[r - 1][c]) walls.push([r, c, r - 1, c]);
   if (r < rows - 1 && !visited[r + 1][c]) walls.push([r, c, r + 1, c]);
@@ -53,6 +57,7 @@ function addWalls(r, c, walls, visited, rows, cols) {
   if (c < cols - 1 && !visited[r][c + 1]) walls.push([r, c, r, c + 1]);
 }
 
+// Prim's Algorithm for maze generation
 function generateMazePrim(rows, cols) {
   const maze = Array.from({ length: rows }, () => Array(cols).fill(0));
   const walls = [];

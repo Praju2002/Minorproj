@@ -1,7 +1,6 @@
-// src/layout/RootLayout.jsx
 import React from 'react';
 import NavBar from '../components/NavBar';
-import FooterBar from '../components/FooterBar';
+// import FooterBar from '../components/FooterBar';
 import { Outlet } from 'react-router-dom';
 
 function RootLayout() {
@@ -9,7 +8,7 @@ function RootLayout() {
     <>
       <NavBar />
       <Outlet />
-      <FooterBar />
+      {/* <FooterBar /> */}
     </>
   );
 }
