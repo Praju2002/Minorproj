@@ -8,7 +8,7 @@
 .maze-cell {
   width: 20px;
   height: 20px;
-  background-color: #b56fb5;
+  background-color: #ffffff;
 }
 
 .maze-cell.wall {
