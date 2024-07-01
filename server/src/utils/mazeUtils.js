@@ -45,7 +45,10 @@ function generateMazeKruskal(rows, cols) {
       steps.push(JSON.parse(JSON.stringify(maze))); // Capture the step
     }
   }
-
+  // Remove walls for starting point (0,0)
+  maze[0][0] = 15; 
+  // Remove walls for ending point (rows-1, cols-1)
+  maze[rows - 1][cols - 1] = 15;
   return { maze, steps };
 }
 
@@ -77,10 +80,15 @@ function generateMazePrim(rows, cols) {
       maze[r][c] |= getDirection(nr - r, nc - c);
       maze[nr][nc] |= getDirection(r - nr, c - nc);
       addWalls(nr, nc, walls, visited, rows, cols);
-      steps.push(JSON.parse(JSON.stringify(maze))); // Capture the step
+      steps.push(JSON.parse(JSON.stringify(maze))); 
     }
   }
 
+  // Remove walls for starting point (0,0)
+  maze[0][0] = 15; 
+
+  // Remove walls for ending point (rows-1, cols-1)
+  maze[rows - 1][cols - 1] = 15;
   return { maze, steps };
 }
 
