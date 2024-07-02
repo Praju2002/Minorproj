@@ -2,8 +2,8 @@ const { generateMazeKruskal, generateMazePrim, calculateMetrics } = require('../
 
 exports.generateMaze = async (req, res) => {
   try {
-    const { maze: mazeKruskal } = generateMazeKruskal(10, 10);
-    const { maze: mazePrim } = generateMazePrim(10, 10);
+    const { maze: mazeKruskal } = generateMazeKruskal(20, 20);
+    const { maze: mazePrim } = generateMazePrim(20, 20);
 
     const metricsKruskal = calculateMetrics(mazeKruskal);
     const metricsPrim = calculateMetrics(mazePrim);
@@ -25,9 +25,9 @@ exports.generateMazeStepwise = async (req, res) => {
     let result;
 
     if (algorithm === 'kruskal') {
-      result = generateMazeKruskal(10, 10);
+      result = generateMazeKruskal(20, 20);
     } else if (algorithm === 'prim') {
-      result = generateMazePrim(10, 10);
+      result = generateMazePrim(20, 20);
     } else {
       return res.status(400).json({ message: 'Invalid algorithm' });
     }

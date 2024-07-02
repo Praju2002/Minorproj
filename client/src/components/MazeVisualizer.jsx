@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import Maze from './Maze';
+import { Box, Button, Typography } from '@mui/material';
+import { pink, purple } from '@mui/material/colors';
 
 function MazeVisualizer() {
   const [steps, setSteps] = useState([]);
   const [currentStep, setCurrentStep] = useState(0);
   const [isGenerating, setIsGenerating] = useState(false);
   const [maze, setMaze] = useState([]);
-  
+
   useEffect(() => {
     if (steps.length > 0) {
       setMaze(steps[currentStep]);
@@ -31,23 +33,74 @@ function MazeVisualizer() {
   };
 
   return (
-    <div>
-      <button onClick={() => fetchMazeSteps('kruskal')} disabled={isGenerating}>
-        {isGenerating ? 'Generating Kruskal Maze...' : 'Generate Kruskal Maze Step-by-Step'}
-      </button>
-      <button onClick={() => fetchMazeSteps('prim')} disabled={isGenerating}>
-        {isGenerating ? 'Generating Prim Maze...' : 'Generate Prim Maze Step-by-Step'}
-      </button>
-      <div>
+    <Box sx={{ textAlign: 'center', padding: 4, backgroundColor: pink[50], borderRadius: 2 }}>
+      <Typography variant="h4" sx={{ color: purple[800], marginBottom: 4 }}>
+        Maze Visualizer
+      </Typography>
+      <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, marginBottom: 4 }}>
+        <Button 
+          onClick={() => fetchMazeSteps('kruskal')} 
+          disabled={isGenerating} 
+          variant="contained" 
+          sx={{ 
+            backgroundColor: purple[200], 
+            '&:hover': { backgroundColor: purple[100] },
+            fontFamily: 'Cursive, sans-serif',
+            borderRadius: 2,
+            padding: '10px 20px',
+          }}
+        >
+          {isGenerating ? 'Generating Kruskal Maze...' : 'Generate Kruskal Maze Step-by-Step'}
+        </Button>
+        <Button 
+          onClick={() => fetchMazeSteps('prim')} 
+          disabled={isGenerating} 
+          variant="contained" 
+          sx={{ 
+            backgroundColor: purple[200], 
+            '&:hover': { backgroundColor: purple[100] },
+            fontFamily: 'Cursive, sans-serif',
+            borderRadius: 2,
+            padding: '10px 20px',
+          }}
+        >
+          {isGenerating ? 'Generating Prim Maze...' : 'Generate Prim Maze Step-by-Step'}
+        </Button>
+      </Box>
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginBottom: 4 }}>
         <Maze maze={maze} />
-      </div>
+      </Box>
       {steps.length > 0 && (
-        <div>
-          <button onClick={prevStep} disabled={currentStep === 0}>Previous Step</button>
-          <button onClick={nextStep} disabled={currentStep === steps.length - 1}>Next Step</button>
-        </div>
+        <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2 }}>
+          <Button 
+            onClick={prevStep} 
+            disabled={currentStep === 0} 
+            variant="contained" 
+            sx={{ 
+              backgroundColor: purple[200], 
+              '&:hover': { backgroundColor: purple[400] },
+              borderRadius: 2,
+              padding: '5px 10px',
+            }}
+          >
+            Previous Step
+          </Button>
+          <Button 
+            onClick={nextStep} 
+            disabled={currentStep === steps.length - 1} 
+            variant="contained" 
+            sx={{ 
+              backgroundColor: purple[200], 
+              '&:hover': { backgroundColor: purple[400] },
+              borderRadius: 2,
+              padding: '5px 10px',
+            }}
+          >
+            Next Step
+          </Button>
+        </Box>
       )}
-    </div>
+    </Box>
   );
 }
 
