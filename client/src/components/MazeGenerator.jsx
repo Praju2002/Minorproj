@@ -39,9 +39,9 @@ const MazeGenerator = () => {
         disabled={isGenerating} 
         variant="contained" 
         sx={{ 
-          backgroundColor: purple[200], 
+          backgroundColor: purple[200], color:"#ffffff",
           '&:hover': { backgroundColor: purple[100] },
-          fontFamily: 'Cursive, sans-serif',
+          fontFamily: 'times new roman',
           borderRadius: 2,
           padding: '10px 20px',
           marginBottom: 4,
