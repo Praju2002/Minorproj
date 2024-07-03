@@ -5,7 +5,8 @@ function Maze({ maze }) {
   if (!maze || maze.length === 0) {
     return <div>No maze data available.</div>;
   }
-console.log(maze);
+// console.log(maze);
+
   return (
     <div className="maze-container" style={{ gridTemplateColumns: `repeat(${maze[0].length}, 20px)` }}>
       {maze.map((row, rowIndex) =>

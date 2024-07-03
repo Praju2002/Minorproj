@@ -1,9 +1,15 @@
 const { generateMazeKruskal, generateMazePrim, calculateMetrics } = require('../utils/mazeUtils');
 
+const { generateMazeKruskal, generateMazePrim, calculateMetrics } = require('../utils/mazeUtils');
+
 exports.generateMaze = async (req, res) => {
   try {
-    const { maze: mazeKruskal } = generateMazeKruskal(20, 20);
-    const { maze: mazePrim } = generateMazePrim(20, 20);
+    // Get rows and cols from query parameters, with defaults and validation
+    const rows = Math.max(10, Math.min(80, parseInt(req.query.rows) || 20));
+    const cols = Math.max(10, Math.min(80, parseInt(req.query.cols) || 20));
+
+    const { maze: mazeKruskal } = generateMazeKruskal(rows, cols);
+    const { maze: mazePrim } = generateMazePrim(rows, cols);
 
     const metricsKruskal = calculateMetrics(mazeKruskal);
     const metricsPrim = calculateMetrics(mazePrim);
@@ -19,15 +25,19 @@ exports.generateMaze = async (req, res) => {
   }
 };
 
+
 exports.generateMazeStepwise = async (req, res) => {
   try {
     const algorithm = req.query.algorithm;
+    const rows = Math.max(10, Math.min(80, parseInt(req.query.rows) || 20));
+    const cols = Math.max(10, Math.min(80, parseInt(req.query.cols) || 20));
+
     let result;
 
     if (algorithm === 'kruskal') {
-      result = generateMazeKruskal(20, 20);
+      result = generateMazeKruskal(rows, cols);
     } else if (algorithm === 'prim') {
-      result = generateMazePrim(20, 20);
+      result = generateMazePrim(rows, cols);
     } else {
       return res.status(400).json({ message: 'Invalid algorithm' });
     }

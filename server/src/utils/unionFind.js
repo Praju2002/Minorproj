@@ -1,3 +1,7 @@
+//A union–find algorithm is an algorithm that performs two useful operations on such a data structure:
+// Find: Determine which subset a particular element is in. This can be used for determining if two elements are in the same subset;
+// Union: Join two subsets into a single subset.
+
 class UnionFind {
   constructor(size) {
     this.parent = Array.from({ length: size }, (_, i) => i);

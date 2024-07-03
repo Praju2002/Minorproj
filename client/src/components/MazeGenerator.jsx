@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Maze from './Maze.jsx';
-import { Box, Button, Typography } from '@mui/material';
+import { Box, Button, Typography, TextField } from '@mui/material';
 import { pink, purple } from '@mui/material/colors';
 
 const MazeGenerator = () => {
@@ -9,12 +9,16 @@ const MazeGenerator = () => {
   const [isGenerating, setIsGenerating] = useState(false);
   const [performanceMetricsKruskal, setPerformanceMetricsKruskal] = useState(null);
   const [performanceMetricsPrim, setPerformanceMetricsPrim] = useState(null);
+  const [rows, setRows] = useState(20);
+  const [cols, setCols] = useState(20);
+  const [errorMessage, setErrorMessage] = useState('');
 
   useEffect(() => {
     if (isGenerating) {
-      fetch('http://localhost:3003/api/generate')
+      fetch(`http://localhost:3003/api/generate?rows=${rows}&cols=${cols}`)
         .then(response => response.json())
         .then(data => {
+          console.log('API response:', data);
           setMazeKruskal(data.mazeKruskal);
           setMazePrim(data.mazePrim);
           setPerformanceMetricsKruskal(data.metricsKruskal);
@@ -26,14 +30,31 @@ const MazeGenerator = () => {
           setIsGenerating(false);
         });
     }
-  }, [isGenerating]);
+  }, [isGenerating, rows, cols]);
 
   const startGeneration = () => {
     setIsGenerating(true);
+    setErrorMessage('');
   };
 
   return (
-    <Box sx={{ padding: 4, backgroundColor: pink[50], borderRadius: 2 }}>
+    <Box sx={{ padding: 4, backgroundColor: pink[50], borderRadius: 2,textAlign:"center" }}>
+      <TextField
+        label="Rows"
+        type="number"
+        value={rows}
+        onChange={(e) => setRows(Math.max(10, Math.min(80, Number(e.target.value))))}
+        sx={{ marginRight: 2 }}
+        inputProps={{ min: 10 ,max:80}}
+      />
+      <TextField
+        label="Columns"
+        type="number"
+        value={cols}
+        onChange={(e) => setCols(Math.max(10, Math.min(80, Number(e.target.value))))} 
+        sx={{ marginRight: 2 }}
+        inputProps={{ min: 10 ,max:80}} 
+      />
       <Button 
         onClick={startGeneration} 
         disabled={isGenerating} 
@@ -65,7 +86,7 @@ const MazeGenerator = () => {
           <Typography variant="h4" sx={{ color: purple[800], marginBottom: 2 }}>
             Prim's Algorithm Maze
           </Typography>
-          {mazePrim && <Maze maze={mazePrim} />}
+          {mazePrim && <Maze maze={mazePrim} />} 
         </Box>
       </Box>
       <Box sx={{
@@ -74,6 +95,7 @@ const MazeGenerator = () => {
         flexDirection: "row",
         alignItems: "flex-start",
         marginTop: 4,
+        textAlign: "left",
       }}>
         {performanceMetricsKruskal && (
           <Box sx={{ backgroundColor: pink[100], padding: 2, borderRadius: 2, boxShadow: 3 }}>
