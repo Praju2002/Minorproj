@@ -1,0 +1,16 @@
+.maze-container {
+    display: grid;
+    gap: 1px;
+    background-color: #8981b300;
+    padding: 10px;
+  }
+  
+  .maze-cell {
+    width: 20px;
+    height: 20px;
+    background-color: #ffffff;
+  }
+  
+  .maze-cell.wall {
+    background-color: #000000;
+  }
