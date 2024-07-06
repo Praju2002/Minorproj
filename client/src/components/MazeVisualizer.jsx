@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Maze from './Maze';
-import { Box, Button, Typography, TextField } from '@mui/material';
+import { Box, Button, Typography, TextField, Snackbar, Alert } from '@mui/material';
 import { pink, purple } from '@mui/material/colors';
 
 function MazeVisualizer() {
@@ -10,6 +10,10 @@ function MazeVisualizer() {
   const [maze, setMaze] = useState([]);
   const [rows, setRows] = useState(20);
   const [cols, setCols] = useState(20);
+  const [rowsError, setRowsError] = useState('');
+  const [colsError, setColsError] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
+  const [openSnackbar, setOpenSnackbar] = useState(false);
 
   useEffect(() => {
     if (steps.length > 0) {
@@ -42,6 +46,39 @@ function MazeVisualizer() {
     setCurrentStep((prevStep) => Math.max(prevStep - 1, 0));
   };
 
+  const handleRowsChange = (e) => {
+    const value = e.target.value;
+    setRows(value);
+    if (value < 10 || value > 80) {
+      setRowsError('Rows must be between 10 and 80.');
+    } else {
+      setRowsError('');
+    }
+  };
+
+  const handleColsChange = (e) => {
+    const value = e.target.value;
+    setCols(value);
+    if (value < 10 || value > 80) {
+      setColsError('Columns must be between 10 and 80.');
+    } else {
+      setColsError('');
+    }
+  };
+
+  const startGeneration = (algorithm) => {
+    if (rowsError || colsError) {
+      setErrorMessage('Please fix the errors before proceeding.');
+      setOpenSnackbar(true);
+      return;
+    }
+    fetchMazeSteps(algorithm);
+  };
+
+  const handleCloseSnackbar = () => {
+    setOpenSnackbar(false);
+  };
+
   return (
     <Box sx={{ textAlign: 'center', padding: 4, backgroundColor: pink[50], borderRadius: 2 }}>
       <Typography variant="h4" sx={{ color: purple[800], marginBottom: 4 }}>
@@ -52,22 +89,26 @@ function MazeVisualizer() {
           label="Rows"
           type="number"
           value={rows}
-          onChange={(e) => setRows(Math.max(10, Math.min(80, Number(e.target.value))))}  // Ensure minimum value of 1
+          onChange={handleRowsChange}
+          error={!!rowsError}
+          helperText={rowsError}
           sx={{ marginRight: 2 }}
-          inputProps={{ min: 10,max:80 }}  // Ensure min value in the UI
+          inputProps={{ min: 10, max: 80 }}
         />
         <TextField
           label="Columns"
           type="number"
           value={cols}
-          onChange={(e) => setCols(Math.max(10, Math.min(80, Number(e.target.value))))}  // Ensure minimum value of 1
+          onChange={handleColsChange}
+          error={!!colsError}
+          helperText={colsError}
           sx={{ marginRight: 2 }}
-          inputProps={{ min: 10,max:80}}  // Ensure min value in the UI
+          inputProps={{ min: 10, max: 80 }}
         />
       </Box>
       <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, marginBottom: 4 }}>
         <Button 
-          onClick={() => fetchMazeSteps('kruskal')} 
+          onClick={() => startGeneration('kruskal')} 
           disabled={isGenerating} 
           variant="contained" 
           sx={{ 
@@ -81,7 +122,7 @@ function MazeVisualizer() {
           {isGenerating ? 'Generating Kruskal Maze...' : 'Generate Kruskal Maze Step-by-Step'}
         </Button>
         <Button 
-          onClick={() => fetchMazeSteps('prim')} 
+          onClick={() => startGeneration('prim')} 
           disabled={isGenerating} 
           variant="contained" 
           sx={{ 
@@ -130,6 +171,11 @@ function MazeVisualizer() {
           </Button>
         </Box>
       )}
+      <Snackbar open={openSnackbar} autoHideDuration={6000} onClose={handleCloseSnackbar}>
+        <Alert onClose={handleCloseSnackbar} severity="error" sx={{ width: '100%' }}>
+          {errorMessage}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 }
