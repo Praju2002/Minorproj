@@ -34,36 +34,3 @@ exports.generateMaze = async (req, res) => {
     res.status(500).json({ message: 'Error generating maze', error });
   }
 };
-exports.generateMazeStepwise = async (req, res) => {
-  try {
-    const algorithm = req.query.algorithm;
-    const rows = Math.max(10, Math.min(80, parseInt(req.query.rows) || 20));
-    const cols = Math.max(10, Math.min(80, parseInt(req.query.cols) || 20));
-
-    let result;
-
-    if (algorithm === 'kruskal') {
-      result = generateMazeKruskal(rows, cols);
-    } else if (algorithm === 'prim') {
-      result = generateMazePrim(rows, cols);
-    } else {
-      return res.status(400).json({ message: 'Invalid algorithm' });
-    }
-
-    const { maze, steps } = result;
-    const metrics = calculateMetrics(maze);
-
-    // Modify metrics object to exclude backtrackPath
-    const metricsWithoutBacktrack = {
-      ...metrics,
-      path: metrics.path,
-    };
-
-    res.json({
-      steps,
-      metrics: metricsWithoutBacktrack,
-    });
-  } catch (error) {
-    res.status(500).json({ message: 'Error generating maze', error });
-  }
-};

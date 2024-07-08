@@ -1,10 +1,22 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import * as d3 from "d3";
 import "./maze.css";
 
-function Maze({ maze, path, deadEndCount }) {
+function Maze({ maze, path }) {
   const svgRef = useRef();
+  const [visitedDeadEndCount, setVisitedDeadEndCount] = useState(0);
   const cellSize = 20;
+  const visitedDeadEnds = useRef(new Set());
+
+  const isDeadEnd = (r, c) => {
+    const cell = maze[r][c];
+    let exits = 0;
+    if ((cell & 1) !== 0 && r > 0) exits++; // Top
+    if ((cell & 2) !== 0 && r < maze.length - 1) exits++; // Bottom
+    if ((cell & 4) !== 0 && c > 0) exits++; // Left
+    if ((cell & 8) !== 0 && c < maze[0].length - 1) exits++; // Right
+    return exits === 1;
+  };
 
   useEffect(() => {
     if (!maze || maze.length === 0) {
@@ -60,13 +72,11 @@ function Maze({ maze, path, deadEndCount }) {
             .attr("y2", y + cellSize)
             .attr("stroke", "black")
             .attr("stroke-width", 1);
-        }
-      });
+      } });
     });
 
-    // Function to simulate delayed rendering
     const renderPathSlowly = (path, color, strokeWidth) => {
-      return new Promise(resolve => {
+      return new Promise((resolve) => {
         const pathGroup = svg.append("g").attr("class", "path-group");
         path.forEach((point, index) => {
           const [x, y] = [point[1] * cellSize + cellSize / 2, point[0] * cellSize + cellSize / 2];
@@ -76,7 +86,8 @@ function Maze({ maze, path, deadEndCount }) {
               .attr("cx", x)
               .attr("cy", y)
               .attr("r", 2)
-              .attr("fill", color); // Simulate drawing with circles for visualization
+              .attr("fill", color);
+
             if (index < path.length - 1) {
               const nextPoint = path[index + 1];
               const [nextX, nextY] = [nextPoint[1] * cellSize + cellSize / 2, nextPoint[0] * cellSize + cellSize / 2];
@@ -88,15 +99,22 @@ function Maze({ maze, path, deadEndCount }) {
                 .attr("stroke", color)
                 .attr("stroke-width", strokeWidth);
             }
-            if (index === path.length - 1) {
-              resolve(); // Resolve the promise when the last line is drawn
+
+            // Check if the current cell is a dead end and hasn't been visited yet
+            const cellKey = `${point[0]}-${point[1]}`;
+            if (isDeadEnd(point[0], point[1]) && !visitedDeadEnds.current.has(cellKey)) {
+              visitedDeadEnds.current.add(cellKey); // Mark cell as visited
+              setVisitedDeadEndCount(prevCount => prevCount + 1); // Increment visited dead end count
             }
-          }, index * 600); // Adjust the delay (600ms here) for desired speed
+
+            if (index === path.length - 1) {
+              resolve();
+            }
+          }, index * 200);
         });
       });
     };
 
-    // Render path with delay
     if (path && path.length > 0) {
       renderPathSlowly(path, "blue", 2);
     }
@@ -110,11 +128,7 @@ function Maze({ maze, path, deadEndCount }) {
   return (
     <div className="maze-container">
       <svg ref={svgRef} width={maze[0].length * cellSize} height={maze.length * cellSize} />
-      {deadEndCount !== undefined && (
-        <div className="dead-end-count">
-          Dead Ends Visited: {deadEndCount}
-        </div>
-      )}
+      <div className="visited-dead-end-counter">Visited Dead Ends: {visitedDeadEndCount}</div>
     </div>
   );
 }

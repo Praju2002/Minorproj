@@ -17,24 +17,13 @@ router.get('/generate', (req, res) => {
     const metricsKruskal = calculateMetrics(mazeKruskal);
     const metricsPrim = calculateMetrics(mazePrim);
 
-    // Modify metrics objects to exclude backtrackPath
-    const metricsKruskalWithoutBacktrack = {
-      ...metricsKruskal,
-      path: metricsKruskal.path,
-    };
-
-    const metricsPrimWithoutBacktrack = {
-      ...metricsPrim,
-      path: metricsPrim.path,
-    };
-
     res.json({
       mazeKruskal,
       stepsKruskal,
-      metricsKruskal: metricsKruskalWithoutBacktrack,
+      metricsKruskal,
       mazePrim,
       stepsPrim,
-      metricsPrim: metricsPrimWithoutBacktrack,
+      metricsPrim,
     });
   } catch (error) {
     console.error('Error generating mazes:', error);
@@ -42,7 +31,7 @@ router.get('/generate', (req, res) => {
   }
 });
 
-router.get('/generate-maze-step-by-step', async (req, res) => {
+router.get('/generate-maze-step-by-step', (req, res) => {
   const { algorithm } = req.query;
   const rows = parseInt(req.query.rows) || 20;
   const cols = parseInt(req.query.cols) || 20;
@@ -61,15 +50,9 @@ router.get('/generate-maze-step-by-step', async (req, res) => {
     const { maze, steps } = result;
     const metrics = calculateMetrics(maze);
 
-    // Modify metrics object to exclude backtrackPath
-    const metricsWithoutBacktrack = {
-      ...metrics,
-      path: metrics.path,
-    };
-
     res.json({
       steps,
-      metrics: metricsWithoutBacktrack,
+      metrics,
     });
   } catch (error) {
     console.error('Error generating maze:', error);

@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "webhdfs": "^1.2.0"
+  }
+}
