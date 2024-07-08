@@ -1,31 +1,39 @@
 const { generateMazeKruskal, generateMazePrim, calculateMetrics } = require('../utils/mazeUtils');
 
-const { generateMazeKruskal, generateMazePrim, calculateMetrics } = require('../utils/mazeUtils');
-
 exports.generateMaze = async (req, res) => {
   try {
-    // Get rows and cols from query parameters, with defaults and validation
     const rows = Math.max(10, Math.min(80, parseInt(req.query.rows) || 20));
     const cols = Math.max(10, Math.min(80, parseInt(req.query.cols) || 20));
 
-    const { maze: mazeKruskal } = generateMazeKruskal(rows, cols);
-    const { maze: mazePrim } = generateMazePrim(rows, cols);
+    const { maze: mazeKruskal, steps: stepsKruskal } = generateMazeKruskal(rows, cols);
+    const { maze: mazePrim, steps: stepsPrim } = generateMazePrim(rows, cols);
 
     const metricsKruskal = calculateMetrics(mazeKruskal);
     const metricsPrim = calculateMetrics(mazePrim);
 
+    // Modify metrics objects to exclude backtrackPath
+    const metricsKruskalWithoutBacktrack = {
+      ...metricsKruskal,
+      path: metricsKruskal.path,
+    };
+
+    const metricsPrimWithoutBacktrack = {
+      ...metricsPrim,
+      path: metricsPrim.path,
+    };
+
     res.json({
       mazeKruskal,
-      metricsKruskal,
+      stepsKruskal,
+      metricsKruskal: metricsKruskalWithoutBacktrack,
       mazePrim,
-      metricsPrim,
+      stepsPrim,
+      metricsPrim: metricsPrimWithoutBacktrack,
     });
   } catch (error) {
     res.status(500).json({ message: 'Error generating maze', error });
   }
 };
-
-
 exports.generateMazeStepwise = async (req, res) => {
   try {
     const algorithm = req.query.algorithm;
@@ -45,9 +53,15 @@ exports.generateMazeStepwise = async (req, res) => {
     const { maze, steps } = result;
     const metrics = calculateMetrics(maze);
 
+    // Modify metrics object to exclude backtrackPath
+    const metricsWithoutBacktrack = {
+      ...metrics,
+      path: metrics.path,
+    };
+
     res.json({
       steps,
-      metrics,
+      metrics: metricsWithoutBacktrack,
     });
   } catch (error) {
     res.status(500).json({ message: 'Error generating maze', error });

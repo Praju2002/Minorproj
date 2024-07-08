@@ -6,6 +6,8 @@ import { pink, purple } from '@mui/material/colors';
 const MazeGenerator = () => {
   const [mazeKruskal, setMazeKruskal] = useState([]);
   const [mazePrim, setMazePrim] = useState([]);
+  const [pathKruskal, setPathKruskal] = useState([]);
+  const [pathPrim, setPathPrim] = useState([]);
   const [isGenerating, setIsGenerating] = useState(false);
   const [performanceMetricsKruskal, setPerformanceMetricsKruskal] = useState(null);
   const [performanceMetricsPrim, setPerformanceMetricsPrim] = useState(null);
@@ -23,7 +25,9 @@ const MazeGenerator = () => {
         .then(data => {
           console.log('API response:', data);
           setMazeKruskal(data.mazeKruskal);
+          setPathKruskal(data.metricsKruskal.path);
           setMazePrim(data.mazePrim);
+          setPathPrim(data.metricsPrim.path);
           setPerformanceMetricsKruskal(data.metricsKruskal);
           setPerformanceMetricsPrim(data.metricsPrim);
           setIsGenerating(false);
@@ -118,13 +122,13 @@ const MazeGenerator = () => {
           <Typography variant="h4" sx={{ color: purple[800], marginBottom: 2 }}>
             Kruskal's Algorithm Maze
           </Typography>
-          {mazeKruskal.length > 0 && <Maze maze={mazeKruskal} />} 
+          {mazeKruskal.length > 0 && <Maze maze={mazeKruskal} path={pathKruskal} />} 
         </Box>
         <Box sx={{ display: "flex", flexDirection: "column", alignItems: 'center' }}>
           <Typography variant="h4" sx={{ color: purple[800], marginBottom: 2 }}>
             Prim's Algorithm Maze
           </Typography>
-          {mazePrim.length > 0 && <Maze maze={mazePrim} />} 
+          {mazePrim.length > 0 && <Maze maze={mazePrim} path={pathPrim} />} 
         </Box>
       </Box>
       <Box sx={{
