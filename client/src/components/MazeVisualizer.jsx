@@ -112,9 +112,9 @@ function MazeVisualizer() {
           disabled={isGenerating} 
           variant="contained" 
           sx={{ 
-            backgroundColor: purple[200], color:"#ffffff",
+            backgroundColor: purple[200], color: "#ffffff",
             '&:hover': { backgroundColor: purple[100] },
-            fontFamily: 'times new roman',
+            fontFamily: 'Times New Roman',
             borderRadius: 2,
             padding: '10px 20px',
           }}
@@ -126,9 +126,9 @@ function MazeVisualizer() {
           disabled={isGenerating} 
           variant="contained" 
           sx={{ 
-            backgroundColor: purple[200], color:"#ffffff",
+            backgroundColor: purple[200], color: "#ffffff",
             '&:hover': { backgroundColor: purple[100] },
-            fontFamily: 'times new roman',
+            fontFamily: 'Times New Roman',
             borderRadius: 2,
             padding: '10px 20px',
           }}
@@ -136,43 +136,44 @@ function MazeVisualizer() {
           {isGenerating ? 'Generating Prim Maze...' : 'Generate Prim Maze Step-by-Step'}
         </Button>
       </Box>
-      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginBottom: 4 }}>
-        <Maze maze={maze} />
-      </Box>
-      {steps.length > 0 && (
-        <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2 }}>
-          <Button 
-            onClick={prevStep} 
-            disabled={currentStep === 0} 
-            variant="contained" 
-            sx={{ 
-              backgroundColor: purple[200], color:"#ffffff",
-              '&:hover': { backgroundColor: purple[100] },
-              fontFamily: 'times new roman',
-              borderRadius: 2,
-              padding: '10px 20px',
-            }}
-          >
-            Previous Step
-          </Button>
-          <Button 
-            onClick={nextStep} 
-            disabled={currentStep === steps.length - 1} 
-            variant="contained" 
-            sx={{ 
-              backgroundColor: purple[200], color:"#ffffff",
-              '&:hover': { backgroundColor: purple[100] },
-              fontFamily: 'times new roman',
-              borderRadius: 2,
-              padding: '10px 20px',
-            }}
-          >
-            Next Step
-          </Button>
+      <Box sx={{ display: "flex", justifyContent: "space-around", flexDirection: "row", alignItems: "flex-start" }}>
+        <Box sx={{ display: "flex", flexDirection: "column", alignItems: 'center' }}>
+          <Typography variant="h4" sx={{ color: purple[800], marginBottom: 2 }}>
+            Generated Maze
+          </Typography>
+          {maze.length > 0 && <Maze maze={maze} />}
         </Box>
-      )}
+      </Box>
+      <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, marginTop: 4 }}>
+        <Button 
+          onClick={prevStep} 
+          variant="contained" 
+          sx={{ 
+            backgroundColor: purple[200], color: "#ffffff",
+            '&:hover': { backgroundColor: purple[100] },
+            fontFamily: 'Times New Roman',
+            borderRadius: 2,
+            padding: '10px 20px',
+          }}
+        >
+          Previous Step
+        </Button>
+        <Button 
+          onClick={nextStep} 
+          variant="contained" 
+          sx={{ 
+            backgroundColor: purple[200], color: "#ffffff",
+            '&:hover': { backgroundColor: purple[100] },
+            fontFamily: 'Times New Roman',
+            borderRadius: 2,
+            padding: '10px 20px',
+          }}
+        >
+          Next Step
+        </Button>
+      </Box>
       <Snackbar open={openSnackbar} autoHideDuration={6000} onClose={handleCloseSnackbar}>
-        <Alert onClose={handleCloseSnackbar} severity="error" sx={{ width: '100%' }}>
+        <Alert onClose={handleCloseSnackbar} severity="info" sx={{ width: '100%' }}>
           {errorMessage}
         </Alert>
       </Snackbar>

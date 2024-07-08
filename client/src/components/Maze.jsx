@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import * as d3 from "d3";
 import "./maze.css";
 
-function Maze({ maze, path, timeDelay }) {
+function Maze({ maze, path, timeDelay, showDeadEndCounter = false }) {
   const svgRef = useRef();
   const [visitedDeadEndCount, setVisitedDeadEndCount] = useState(0);
   const cellSize = 20;
@@ -72,7 +72,8 @@ function Maze({ maze, path, timeDelay }) {
             .attr("y2", y + cellSize)
             .attr("stroke", "black")
             .attr("stroke-width", 1);
-      } });
+        }
+      });
     });
 
     const renderPathSlowly = (path, color, strokeWidth) => {
@@ -128,7 +129,9 @@ function Maze({ maze, path, timeDelay }) {
   return (
     <div className="maze-container">
       <svg ref={svgRef} width={maze[0].length * cellSize} height={maze.length * cellSize} />
-      <div className="visited-dead-end-counter">Visited Dead Ends: {visitedDeadEndCount}</div>
+      {showDeadEndCounter && (
+        <div className="visited-dead-end-counter">Visited Dead Ends: {visitedDeadEndCount}</div>
+      )}
     </div>
   );
 }

@@ -13,13 +13,14 @@ const MazeGenerator = () => {
   const [performanceMetricsPrim, setPerformanceMetricsPrim] = useState(null);
   const [rows, setRows] = useState('20');
   const [cols, setCols] = useState('20');
-  const [timeDelay, setTimeDelay] = useState('200'); // New state for time delay
+  const [timeDelay, setTimeDelay] = useState('200');
   const [rowsError, setRowsError] = useState('');
   const [colsError, setColsError] = useState('');
-  const [timeDelayError, setTimeDelayError] = useState(''); // State for time delay error
+  const [timeDelayError, setTimeDelayError] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [mazeKey, setMazeKey] = useState(0); // State to force remount of Maze components
+  const [renderingPath, setRenderingPath] = useState(false); // New state to manage path rendering
 
   useEffect(() => {
     if (isGenerating) {
@@ -34,14 +35,28 @@ const MazeGenerator = () => {
           setPerformanceMetricsKruskal(data.metricsKruskal);
           setPerformanceMetricsPrim(data.metricsPrim);
           setMazeKey(prevKey => prevKey + 1); // Update the key to force remount
+          setRenderingPath(true); // Set to true while path is rendering
           setIsGenerating(false);
         })
         .catch(error => {
           console.error('Failed to fetch:', error);
           setIsGenerating(false);
+          setErrorMessage('Failed to generate maze.');
+          setOpenSnackbar(true);
         });
     }
   }, [isGenerating, rows, cols]);
+
+  useEffect(() => {
+    if (renderingPath) {
+      // Code to manage path rendering and resetting `renderingPath`
+      const timer = setTimeout(() => {
+        setRenderingPath(false); // Reset after rendering
+      }, Number(timeDelay) * (pathKruskal.length + pathPrim.length)); // Adjust based on path length
+
+      return () => clearTimeout(timer); // Clear timeout if component unmounts
+    }
+  }, [renderingPath, pathKruskal.length, pathPrim.length, timeDelay]);
 
   const handleRowsChange = (e) => {
     const value = e.target.value;
@@ -78,16 +93,19 @@ const MazeGenerator = () => {
     const colNum = cols === '' ? 10 : Number(cols);
     const delay = timeDelay === '' ? 200 : Number(timeDelay);
 
-    if (!rowsError && !colsError && !timeDelayError && rowNum >= 10 && rowNum <= 80 && colNum >= 10 && colNum <= 80 && delay >= 10 && delay <= 2000) {
-      setIsGenerating(true);
-    } else {
+    if (rowsError || colsError || timeDelayError || rowNum < 10 || rowNum > 80 || colNum < 10 || colNum > 80 || delay < 10 || delay > 2000) {
       setErrorMessage('Please fix the errors before generating the maze.');
       setOpenSnackbar(true);
+    } else {
+      setErrorMessage(''); // Clear any previous errors
+      setOpenSnackbar(false); // Close the Snackbar
+      setIsGenerating(true);
     }
   };
 
   const handleCloseSnackbar = () => {
     setOpenSnackbar(false);
+    setErrorMessage(''); // Clear error message after closing the Snackbar
   };
 
   return (
@@ -121,6 +139,7 @@ const MazeGenerator = () => {
         helperText={timeDelayError}
         sx={{ marginRight: 2 }}
         inputProps={{ min: 10, max: 2000 }}
+        disabled={isGenerating || renderingPath} // Disable while generating or rendering path
       />
       <Button 
         onClick={startGeneration} 
@@ -137,33 +156,21 @@ const MazeGenerator = () => {
       >
         {isGenerating ? 'Generating Maze...' : 'Generate Maze'}
       </Button>
-      <Box sx={{
-        display: "flex",
-        justifyContent: "space-around",
-        flexDirection: "row",
-        alignItems: "flex-start",
-      }}>
+      <Box sx={{ display: "flex", justifyContent: "space-around", flexDirection: "row", alignItems: "flex-start" }}>
         <Box sx={{ display: "flex", flexDirection: "column", alignItems: 'center' }}>
           <Typography variant="h4" sx={{ color: purple[800], marginBottom: 2 }}>
             Kruskal's Algorithm Maze
           </Typography>
-          {mazeKruskal.length > 0 && <Maze key={`${mazeKey}-kruskal`} maze={mazeKruskal} path={pathKruskal} timeDelay={timeDelay} />} 
+          {mazeKruskal.length > 0 && <Maze key={`${mazeKey}-kruskal`} maze={mazeKruskal} path={pathKruskal} timeDelay={timeDelay} showDeadEndCounter />} 
         </Box>
         <Box sx={{ display: "flex", flexDirection: "column", alignItems: 'center' }}>
           <Typography variant="h4" sx={{ color: purple[800], marginBottom: 2 }}>
             Prim's Algorithm Maze
           </Typography>
-          {mazePrim.length > 0 && <Maze key={`${mazeKey}-prim`} maze={mazePrim} path={pathPrim} timeDelay={timeDelay} />} 
+          {mazePrim.length > 0 && <Maze key={`${mazeKey}-prim`} maze={mazePrim} path={pathPrim} timeDelay={timeDelay} showDeadEndCounter />} 
         </Box>
       </Box>
-      <Box sx={{
-        display: "flex",
-        justifyContent: "space-around",
-        flexDirection: "row",
-        alignItems: "flex-start",
-        marginTop: 4,
-        textAlign: "left",
-      }}>
+      <Box sx={{ display: "flex", justifyContent: "space-around", flexDirection: "row", alignItems: "flex-start", marginTop: 4, textAlign: "left" }}>
         {performanceMetricsKruskal && (
           <Box sx={{ backgroundColor: pink[100], padding: 2, borderRadius: 2, boxShadow: 3 }}>
             <Typography variant="h6" sx={{ color: purple[700], marginBottom: 1 }}>
@@ -189,8 +196,8 @@ const MazeGenerator = () => {
           </Box>
         )}
       </Box>
-      <Snackbar open={openSnackbar} autoHideDuration={6000} onClose={handleCloseSnackbar}>
-        <Alert onClose={handleCloseSnackbar} severity="error" sx={{ width: '100%' }}>
+      <Snackbar open={openSnackbar} autoHideDuration={5000} onClose={handleCloseSnackbar}>
+        <Alert onClose={handleCloseSnackbar} severity={errorMessage ? 'error' : 'info'} sx={{ width: '100%' }}>
           {errorMessage}
         </Alert>
       </Snackbar>
