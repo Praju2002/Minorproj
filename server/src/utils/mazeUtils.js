@@ -46,8 +46,8 @@ function generateMazeKruskal(rows, cols) {
     }
   }
   const metrics = calculateMetrics(maze);
-  maze[0][0] = 14;
-  maze[rows - 1][cols - 1] = 13;
+  // maze[0][0] = 14;
+  // maze[rows - 1][cols - 1] = 13;
   return { maze, steps,...metrics };
 }
 
@@ -86,8 +86,8 @@ function generateMazePrim(rows, cols) {
     }
   }
   const metrics = calculateMetrics(maze);
-  maze[0][0] =14;
-  maze[rows - 1][cols - 1] = 13;
+  // maze[0][0] =14;
+  // maze[rows - 1][cols - 1] = 13;
   return { maze, steps,...metrics };
 }
 

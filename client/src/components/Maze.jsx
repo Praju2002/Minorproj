@@ -53,7 +53,7 @@ function Maze({ maze, path, timeDelay, showDeadEndCounter = false }) {
             .attr("x2", x + cellSize)
             .attr("y2", y + cellSize)
             .attr("stroke", "black")
-            .attr("stroke-width", 1);
+            .attr("stroke-width", 2);
         }
         if (isWallLeft) {
           mazeGroup.append("line")
@@ -62,7 +62,7 @@ function Maze({ maze, path, timeDelay, showDeadEndCounter = false }) {
             .attr("x2", x)
             .attr("y2", y + cellSize)
             .attr("stroke", "black")
-            .attr("stroke-width", 1);
+            .attr("stroke-width", 2);
         }
         if (isWallRight) {
           mazeGroup.append("line")
@@ -71,11 +71,36 @@ function Maze({ maze, path, timeDelay, showDeadEndCounter = false }) {
             .attr("x2", x + cellSize)
             .attr("y2", y + cellSize)
             .attr("stroke", "black")
-            .attr("stroke-width", 1);
+            .attr("stroke-width", 2);
         }
       });
     });
 
+    // Add start and end point markers
+    const startPoint = [0, 0]; // Starting point (row, column)
+    const endPoint = [maze.length - 1, maze[0].length - 1]; // Ending point (row, column)
+
+    mazeGroup.append("circle")
+      .attr("cx", startPoint[1] * cellSize + cellSize / 2)
+      .attr("cy", startPoint[0] * cellSize + cellSize / 2)
+      .attr("r", 5)
+      .attr("fill", "green")
+      .attr("stroke", "black")
+      .attr("stroke-width", 2)
+      .append("title")
+      .text("Start");
+
+    mazeGroup.append("circle")
+      .attr("cx", endPoint[1] * cellSize + cellSize / 2)
+      .attr("cy", endPoint[0] * cellSize + cellSize / 2)
+      .attr("r", 5)
+      .attr("fill", "red")
+      .attr("stroke", "black")
+      .attr("stroke-width", 2)
+      .append("title")
+      .text("End");
+
+    // Function to render path with delay
     const renderPathSlowly = (path, color, strokeWidth) => {
       return new Promise((resolve) => {
         const pathGroup = svg.append("g").attr("class", "path-group");

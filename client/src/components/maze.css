@@ -1,16 +1,72 @@
+/* maze.css */
+
 .maze-container {
   display: grid;
-  gap: 1px;
-  background-color: #8981b300;
-  padding: 10px;
+  gap: 0px;
+  background-color: #f0f4f8; /* Light background for the maze container */
+  padding: 20px; /* Added more padding for spacing */
+  border-radius: 10px; /* Rounded corners for a softer look */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Added shadow for depth */
+  text-align: center; /* Centered the text inside the container */
+}
+
+.visited-dead-end-counter {
+  margin-top: 10px; /* Spacing between the maze and the counter */
+  font-size: 16px; /* Slightly larger font for better readability */
+  font-weight: bold; /* Bold text for emphasis */
+  color: #333; /* Darker color for better contrast */
+  background-color: #fefefe; /* Light background for the counter */
+  border: 2px solid #ccc; /* Border around the counter */
+  border-radius: 5px; /* Rounded corners for the counter */
+  padding: 5px 10px; /* Padding inside the counter */
+  display: inline-block; /* Inline-block to fit text content */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+}
+
+.maze-group line {
+  transition: stroke 0.3s ease; /* Smooth transition for wall changes */
+}
+
+.path-group circle {
+  transition: fill 0.3s ease; /* Smooth transition for path circle colors */
+}
+
+.path-group line {
+  transition: stroke 0.3s ease; /* Smooth transition for path line colors */
 }
 
 .maze-cell {
   width: 20px;
   height: 20px;
   background-color: #ffffff;
+  border: 1px solid #ddd; /* Light border for cells */
+  border-radius: 3px; /* Rounded corners for cells */
 }
 
 .maze-cell.wall {
-  background-color: #000000;
+  background-color: #333333; /* Darker color for walls */
+  border: none; /* Remove border for walls */
+}
+
+/* Added styles for start and end markers */
+.maze-group circle {
+  transition: fill 0.3s ease, stroke 0.3s ease; /* Smooth transition for marker colors */
+}
+
+.maze-group circle:hover {
+  fill: #00ff00; /* Change color on hover for start */
+  stroke: #004d00; /* Darker stroke on hover for start */
+}
+
+.maze-group circle:hover.title {
+  fill: #ff0000; /* Change color on hover for end */
+  stroke: #cc0000; /* Darker stroke on hover for end */
+}
+
+.maze-group circle[fill="green"] {
+  cursor: pointer; /* Pointer cursor for start */
+}
+
+.maze-group circle[fill="red"] {
+  cursor: pointer; /* Pointer cursor for end */
 }
