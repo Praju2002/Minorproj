@@ -13,10 +13,13 @@ const MazeGenerator = () => {
   const [performanceMetricsPrim, setPerformanceMetricsPrim] = useState(null);
   const [rows, setRows] = useState('20');
   const [cols, setCols] = useState('20');
+  const [timeDelay, setTimeDelay] = useState('200'); // New state for time delay
   const [rowsError, setRowsError] = useState('');
   const [colsError, setColsError] = useState('');
+  const [timeDelayError, setTimeDelayError] = useState(''); // State for time delay error
   const [errorMessage, setErrorMessage] = useState('');
   const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [mazeKey, setMazeKey] = useState(0); // State to force remount of Maze components
 
   useEffect(() => {
     if (isGenerating) {
@@ -30,6 +33,7 @@ const MazeGenerator = () => {
           setPathPrim(data.metricsPrim.path);
           setPerformanceMetricsKruskal(data.metricsKruskal);
           setPerformanceMetricsPrim(data.metricsPrim);
+          setMazeKey(prevKey => prevKey + 1); // Update the key to force remount
           setIsGenerating(false);
         })
         .catch(error => {
@@ -59,11 +63,22 @@ const MazeGenerator = () => {
     }
   };
 
+  const handleTimeDelayChange = (e) => {
+    const value = e.target.value;
+    setTimeDelay(value);
+    if (value < 10 || value > 2000) {
+      setTimeDelayError('Time delay must be between 10 and 2000 milliseconds.');
+    } else {
+      setTimeDelayError('');
+    }
+  };
+
   const startGeneration = () => {
     const rowNum = rows === '' ? 10 : Number(rows);
     const colNum = cols === '' ? 10 : Number(cols);
+    const delay = timeDelay === '' ? 200 : Number(timeDelay);
 
-    if (!rowsError && !colsError && rowNum >= 10 && rowNum <= 80 && colNum >= 10 && colNum <= 80) {
+    if (!rowsError && !colsError && !timeDelayError && rowNum >= 10 && rowNum <= 80 && colNum >= 10 && colNum <= 80 && delay >= 10 && delay <= 2000) {
       setIsGenerating(true);
     } else {
       setErrorMessage('Please fix the errors before generating the maze.');
@@ -97,6 +112,16 @@ const MazeGenerator = () => {
         sx={{ marginRight: 2 }}
         inputProps={{ min: 10, max: 80 }}
       />
+      <TextField
+        label="Time Delay (ms)"
+        type="number"
+        value={timeDelay}
+        onChange={handleTimeDelayChange}
+        error={!!timeDelayError}
+        helperText={timeDelayError}
+        sx={{ marginRight: 2 }}
+        inputProps={{ min: 10, max: 2000 }}
+      />
       <Button 
         onClick={startGeneration} 
         disabled={isGenerating} 
@@ -122,13 +147,13 @@ const MazeGenerator = () => {
           <Typography variant="h4" sx={{ color: purple[800], marginBottom: 2 }}>
             Kruskal's Algorithm Maze
           </Typography>
-          {mazeKruskal.length > 0 && <Maze maze={mazeKruskal} path={pathKruskal} />} 
+          {mazeKruskal.length > 0 && <Maze key={`${mazeKey}-kruskal`} maze={mazeKruskal} path={pathKruskal} timeDelay={timeDelay} />} 
         </Box>
         <Box sx={{ display: "flex", flexDirection: "column", alignItems: 'center' }}>
           <Typography variant="h4" sx={{ color: purple[800], marginBottom: 2 }}>
             Prim's Algorithm Maze
           </Typography>
-          {mazePrim.length > 0 && <Maze maze={mazePrim} path={pathPrim} />} 
+          {mazePrim.length > 0 && <Maze key={`${mazeKey}-prim`} maze={mazePrim} path={pathPrim} timeDelay={timeDelay} />} 
         </Box>
       </Box>
       <Box sx={{

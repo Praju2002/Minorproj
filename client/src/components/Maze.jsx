@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import * as d3 from "d3";
 import "./maze.css";
 
-function Maze({ maze, path }) {
+function Maze({ maze, path, timeDelay }) {
   const svgRef = useRef();
   const [visitedDeadEndCount, setVisitedDeadEndCount] = useState(0);
   const cellSize = 20;
@@ -110,7 +110,7 @@ function Maze({ maze, path }) {
             if (index === path.length - 1) {
               resolve();
             }
-          }, index * 200);
+          }, index * timeDelay);
         });
       });
     };
@@ -119,7 +119,7 @@ function Maze({ maze, path }) {
       renderPathSlowly(path, "blue", 2);
     }
 
-  }, [maze, path]);
+  }, [maze, path, timeDelay]);
 
   if (!maze || maze.length === 0) {
     return <div>No maze data available.</div>;
