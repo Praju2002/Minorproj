@@ -8,6 +8,8 @@
   border-radius: 10px; /* Rounded corners for a softer look */
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Added shadow for depth */
   text-align: center; /* Centered the text inside the container */
+  max-width: 100%; /* Ensures the maze container doesn't overflow */
+  overflow: hidden; /* Hides overflow content */
 }
 
 .visited-dead-end-counter {

@@ -1,15 +1,23 @@
 const { MongoClient } = require('mongodb');
-require('dotenv').config(); // Load environment variables from .env file
+require('dotenv').config();
 
-const uri = process.env.MONGODB_URI ; // Use environment variable or default to localhost
-const dbName = process.env.DB_NAME ; // Use environment variable or default to 'mazeDB'
+const uri = process.env.MONGODB_URI;
+const dbName = process.env.DB_NAME;
 
-const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+const client = new MongoClient(uri, {
+  serverSelectionTimeoutMS: 30000,  // Increase server selection timeout to 30 seconds
+  socketTimeoutMS: 45000,  // Increase socket timeout to 45 seconds
+});
 
 async function connectDB() {
-  await client.connect();
-  console.log('Connected to MongoDB');
-  return client.db(dbName); // Use the database name from environment variables
+  try {
+    await client.connect();
+    console.log('Connected to MongoDB');
+    return client.db(dbName);
+  } catch (error) {
+    console.error('Error connecting to MongoDB:', error);
+    throw error;
+  }
 }
 
 module.exports = { connectDB };

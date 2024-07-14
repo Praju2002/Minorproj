@@ -1,16 +1,16 @@
 {
   "Prim": {
-    "numIntersections": 229.66666666666666,
-    "numDeadEnds": 270.3333333333333,
-    "numSteps": 349.53333333333336,
-    "numVisitedIntersections": 20.2,
-    "numVisitedDeadEnds": 103.46666666666667
+    "numIntersections": 233.26190476190476,
+    "numDeadEnds": 274.4047619047619,
+    "numSteps": 399.4761904761905,
+    "numVisitedIntersections": 21.714285714285715,
+    "numVisitedDeadEnds": 117.9047619047619
   },
   "Kruskal": {
-    "numIntersections": 219.13333333333333,
-    "numDeadEnds": 252.33333333333334,
-    "numSteps": 406.93333333333334,
-    "numVisitedIntersections": 18.2,
-    "numVisitedDeadEnds": 110.2
+    "numIntersections": 224.07142857142858,
+    "numDeadEnds": 259.1904761904762,
+    "numSteps": 476.73809523809524,
+    "numVisitedIntersections": 21.047619047619047,
+    "numVisitedDeadEnds": 130.76190476190476
   }
 }
