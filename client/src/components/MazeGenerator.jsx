@@ -62,8 +62,8 @@ const MazeGenerator = () => {
   const handleRowsChange = (e) => {
     const value = e.target.value;
     setRows(value);
-    if (value < 10 || value > 80) {
-      setRowsError('Rows must be between 10 and 80.');
+    if (value < 10 || value > 50) {
+      setRowsError('Rows must be between 10 and 50.');
     } else {
       setRowsError('');
     }
@@ -72,8 +72,8 @@ const MazeGenerator = () => {
   const handleColsChange = (e) => {
     const value = e.target.value;
     setCols(value);
-    if (value < 10 || value > 80) {
-      setColsError('Columns must be between 10 and 80.');
+    if (value < 10 || value > 50) {
+      setColsError('Columns must be between 10 and 50.');
     } else {
       setColsError('');
     }
@@ -94,7 +94,7 @@ const MazeGenerator = () => {
     const colNum = cols === '' ? 10 : Number(cols);
     const delay = timeDelay === '' ? 200 : Number(timeDelay);
 
-    if (rowsError || colsError || timeDelayError || rowNum < 10 || rowNum > 80 || colNum < 10 || colNum > 80 || delay < 10 || delay > 2000) {
+    if (rowsError || colsError || timeDelayError || rowNum < 10 || rowNum > 50 || colNum < 10 || colNum > 50 || delay < 10 || delay > 2000) {
       setErrorMessage('Please fix the errors before generating the maze.');
       setOpenSnackbar(true);
     } else {
@@ -133,7 +133,7 @@ const MazeGenerator = () => {
         error={!!rowsError}
         helperText={rowsError}
         sx={{ marginRight: 2 }}
-        inputProps={{ min: 10, max: 80 }}
+        inputProps={{ min: 10, max: 50 }}
       />
       <TextField
         label="Columns"
@@ -143,7 +143,7 @@ const MazeGenerator = () => {
         error={!!colsError}
         helperText={colsError}
         sx={{ marginRight: 2 }}
-        inputProps={{ min: 10, max: 80 }}
+        inputProps={{ min: 10, max: 50 }}
       />
       <TextField
         label="Time Delay (ms)"
