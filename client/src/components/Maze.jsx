@@ -16,7 +16,7 @@ function Maze({ maze, path, timeDelay, showDeadEndCounter = false }) {
     if ((cell & 4) !== 0 && c > 0) exits++; // Left
     if ((cell & 8) !== 0 && c < maze[0].length - 1) exits++; // Right
     return exits === 1;
-  };
+  };6
 
   useEffect(() => {
     if (!maze || maze.length === 0) {
@@ -25,6 +25,15 @@ function Maze({ maze, path, timeDelay, showDeadEndCounter = false }) {
 
     const svg = d3.select(svgRef.current);
     svg.selectAll("*").remove();
+
+    const width = Math.min(window.innerWidth, maze[0].length * cellSize);
+    const height = Math.min(window.innerHeight - 100, maze.length * cellSize);
+
+    svg
+      .attr("viewBox", `0 0 ${maze[0].length * cellSize} ${maze.length * cellSize}`)
+      .attr("width", width)
+      .attr("height", height)
+      .attr("preserveAspectRatio", "xMidYMid meet");
 
     const mazeGroup = svg.append("g").attr("class", "maze-group");
 
@@ -153,7 +162,7 @@ function Maze({ maze, path, timeDelay, showDeadEndCounter = false }) {
 
   return (
     <div className="maze-container">
-      <svg ref={svgRef} width={maze[0].length * cellSize} height={maze.length * cellSize} />
+      <svg ref={svgRef} />
       {showDeadEndCounter && (
         <div className="visited-dead-end-counter">Visited Dead Ends: {visitedDeadEndCount}</div>
       )}

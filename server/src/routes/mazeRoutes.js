@@ -1,8 +1,12 @@
 const express = require('express');
 const router = express.Router();
-const { generateMazeKruskal, generateMazePrim, calculateMetrics } = require('../utils/mazeUtils');
+const { generateMazeKruskal, generateMazePrim } = require('../utils/mazeUtils');
+const { generateReport } = require('../utils/reportUtils');
+const path = require('path');
+const fs = require('fs');
 
-router.get('/generate', (req, res) => {
+// Endpoint to generate mazes using Kruskal's and Prim's algorithms
+router.get('/generate', async (req, res) => {
   const rows = parseInt(req.query.rows, 10);
   const cols = parseInt(req.query.cols, 10);
 
@@ -11,52 +15,62 @@ router.get('/generate', (req, res) => {
   }
 
   try {
-    const { maze: mazeKruskal, steps: stepsKruskal } = generateMazeKruskal(rows, cols);
-    const { maze: mazePrim, steps: stepsPrim } = generateMazePrim(rows, cols);
-
-    const metricsKruskal = calculateMetrics(mazeKruskal);
-    const metricsPrim = calculateMetrics(mazePrim);
+    const kruskalResult = await generateMazeKruskal(rows, cols);
+    const primResult = await generateMazePrim(rows, cols);
 
     res.json({
-      mazeKruskal,
-      stepsKruskal,
-      metricsKruskal,
-      mazePrim,
-      stepsPrim,
-      metricsPrim,
+      mazeKruskal: kruskalResult.maze,
+      stepsKruskal: kruskalResult.steps,
+      metricsKruskal: kruskalResult,
+      mazePrim: primResult.maze,
+      stepsPrim: primResult.steps,
+      metricsPrim: primResult,
     });
   } catch (error) {
     console.error('Error generating mazes:', error);
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: 'Error generating mazes.' });
   }
 });
 
-router.get('/generate-maze-step-by-step', (req, res) => {
+// Endpoint to generate a maze step-by-step for a specified algorithm
+router.get('/generate-maze-step-by-step', async (req, res) => {
   const { algorithm } = req.query;
-  const rows = parseInt(req.query.rows) || 20;
-  const cols = parseInt(req.query.cols) || 20;
+  const rows = parseInt(req.query.rows, 10) || 20;
+  const cols = parseInt(req.query.cols, 10) || 20;
 
   try {
     let result;
 
     if (algorithm === 'kruskal') {
-      result = generateMazeKruskal(rows, cols);
+      result = await generateMazeKruskal(rows, cols);
     } else if (algorithm === 'prim') {
-      result = generateMazePrim(rows, cols);
+      result = await generateMazePrim(rows, cols);
     } else {
       return res.status(400).json({ message: 'Invalid algorithm' });
     }
 
-    const { maze, steps } = result;
-    const metrics = calculateMetrics(maze);
-
     res.json({
-      steps,
-      metrics,
+      steps: result.steps,
+      metrics: result,
     });
   } catch (error) {
     console.error('Error generating maze:', error);
-    res.status(500).json({ message: 'Error generating maze', error });
+    res.status(500).json({ message: 'Error generating maze.', error });
+  }
+});
+
+// Endpoint to generate and serve a report comparing maze generation algorithms
+router.get('/generate-report', async (req, res) => {
+  try {
+    await generateReport(['Prim', 'Kruskal']); // Generate the report for both algorithms
+
+    // Assuming generateReport generates 'report.json', read it and send its contents
+    const reportPath = path.join(__dirname, '../../report.json');
+    const reportData = fs.readFileSync(reportPath, 'utf8');
+    res.json(JSON.parse(reportData));
+  } catch (error) {
+    console.error('Error generating report:', error);
+    res.status(500).json({ message: 'Error generating report.', error });
   }
 });
 

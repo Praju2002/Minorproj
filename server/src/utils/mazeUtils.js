@@ -1,4 +1,5 @@
 const { UnionFind } = require("./unionFind");
+const { connectDB } = require("../../db"); // Corrected the import path
 
 // Utility function to shuffle an array
 function shuffleArray(array) {
@@ -9,7 +10,7 @@ function shuffleArray(array) {
   return array;
 }
 
-// Utility function to get the direction
+// Utility function to get the direction based on cell movement
 function getDirection(dr, dc) {
   if (dr === -1) return 1; // Up
   if (dr === 1) return 2; // Down
@@ -18,12 +19,57 @@ function getDirection(dr, dc) {
   return 0;
 }
 
+async function storeMetricsInDB(metrics, algorithm) {
+  const db = await connectDB();
+  const collection = db.collection('mazeMetrics');
+  await collection.insertOne({ ...metrics, algorithm, createdAt: new Date() });
+}
+
+// Calculate metrics for the maze
+async function calculateMetrics(maze, algorithm) {
+  if (!maze || !Array.isArray(maze) || maze.length === 0 || !Array.isArray(maze[0])) {
+    throw new Error('Invalid maze input');
+  }
+  let numIntersections = 0;
+  let numDeadEnds = 0;
+
+  const rows = maze.length;
+  const cols = maze[0].length;
+
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      const cell = maze[r][c];
+      const neighbors = countNeighbors(cell);
+
+      if (neighbors > 2) numIntersections++;
+      if (neighbors === 1) numDeadEnds++;
+    }
+  }
+
+  const { numSteps, numVisitedIntersections, numVisitedDeadEnds, path, backtrackPath } = heuristicDFS(maze);
+
+  const metrics = {
+    numIntersections,
+    numDeadEnds,
+    numSteps,
+    numVisitedIntersections,
+    numVisitedDeadEnds,
+    path,
+    backtrackPath // Include the path in the metrics
+  };
+
+  await storeMetricsInDB(metrics, algorithm);
+
+  return metrics;
+}
+
 // Kruskal's Algorithm for maze generation
-function generateMazeKruskal(rows, cols) {
+async function generateMazeKruskal(rows, cols) {
   const maze = Array.from({ length: rows }, () => Array(cols).fill(0));
   const walls = [];
   const steps = [];
 
+  // Initialize walls between cells
   for (let r = 0; r < rows; r++) {
     for (let c = 0; c < cols; c++) {
       if (r < rows - 1) walls.push([r, c, r + 1, c]);
@@ -34,6 +80,7 @@ function generateMazeKruskal(rows, cols) {
   shuffleArray(walls);
   const uf = new UnionFind(rows * cols);
 
+  // Process walls and connect cells if they are not already connected
   for (const [r1, c1, r2, c2] of walls) {
     const cell1 = r1 * cols + c1;
     const cell2 = r2 * cols + c2;
@@ -45,10 +92,9 @@ function generateMazeKruskal(rows, cols) {
       steps.push(JSON.parse(JSON.stringify(maze)));
     }
   }
-  const metrics = calculateMetrics(maze);
-  // maze[0][0] = 14;
-  // maze[rows - 1][cols - 1] = 13;
-  return { maze, steps,...metrics };
+  
+  const metrics = await calculateMetrics(maze, 'Kruskal');
+  return { maze, steps, ...metrics };
 }
 
 // Utility function to add walls around a cell
@@ -60,7 +106,7 @@ function addWalls(r, c, walls, visited, rows, cols) {
 }
 
 // Prim's Algorithm for maze generation
-function generateMazePrim(rows, cols) {
+async function generateMazePrim(rows, cols) {
   const maze = Array.from({ length: rows }, () => Array(cols).fill(0));
   const walls = [];
   const visited = Array.from({ length: rows }, () => Array(cols).fill(false));
@@ -72,10 +118,7 @@ function generateMazePrim(rows, cols) {
   addWalls(startRow, startCol, walls, visited, rows, cols);
 
   while (walls.length > 0) {
-    const [r, c, nr, nc] = walls.splice(
-      Math.floor(Math.random() * walls.length),
-      1
-    )[0];
+    const [r, c, nr, nc] = walls.splice(Math.floor(Math.random() * walls.length), 1)[0];
 
     if (!visited[nr][nc]) {
       visited[nr][nc] = true;
@@ -85,12 +128,12 @@ function generateMazePrim(rows, cols) {
       steps.push(JSON.parse(JSON.stringify(maze)));
     }
   }
-  const metrics = calculateMetrics(maze);
-  // maze[0][0] =14;
-  // maze[rows - 1][cols - 1] = 13;
-  return { maze, steps,...metrics };
+  
+  const metrics = await calculateMetrics(maze, 'Prim');
+  return { maze, steps, ...metrics };
 }
 
+// Heuristic DFS for solving the maze
 function heuristicDFS(maze) {
   const rows = maze.length;
   const cols = maze[0].length;
@@ -142,18 +185,18 @@ function heuristicDFS(maze) {
   return { numSteps, numVisitedIntersections, numVisitedDeadEnds, path, backtrackPath };
 }
 
-
-
+// Utility function to get neighbors of a cell
 function getNeighbors(cell, r, c, rows, cols, visited) {
   const neighbors = [];
   if ((cell & 1) !== 0 && r > 0 && !visited[r - 1][c]) neighbors.push([r - 1, c]); // Top
   if ((cell & 2) !== 0 && r < rows - 1 && !visited[r + 1][c]) neighbors.push([r + 1, c]); // Bottom
   if ((cell & 4) !== 0 && c > 0 && !visited[r][c - 1]) neighbors.push([r, c - 1]); // Left
   if ((cell & 8) !== 0 && c < cols - 1 && !visited[r][c + 1]) neighbors.push([r, c + 1]); // Right
+  
   return neighbors;
 }
 
-
+// Utility function to count the number of neighbors of a cell
 function countNeighbors(cell) {
   let count = 0;
   if (cell & 1) count++;
@@ -162,41 +205,6 @@ function countNeighbors(cell) {
   if (cell & 8) count++;
   return count;
 }
-
-function calculateMetrics(maze) {
-  if (!maze || !Array.isArray(maze) || maze.length === 0 || !Array.isArray(maze[0])) {
-    throw new Error('Invalid maze input');
-  }
-  let numIntersections = 0;
-  let numDeadEnds = 0;
-
-  const rows = maze.length;
-  const cols = maze[0].length;
-
-  for (let r = 0; r < rows; r++) {
-    for (let c = 0; c < cols; c++) {
-      const cell = maze[r][c];
-      const neighbors = countNeighbors(cell);
-
-      if (neighbors > 2) numIntersections++;
-      if (neighbors === 1) numDeadEnds++;
-    }
-  }
-
-  const { numSteps, numVisitedIntersections, numVisitedDeadEnds, path ,backtrackPath} =
-    heuristicDFS(maze);
-
-  return {
-    numIntersections,
-    numDeadEnds,
-    numSteps,
-    numVisitedIntersections,
-    numVisitedDeadEnds,
-    path,
-    backtrackPath // Include the path in the metrics
-  };
-}
-
 
 module.exports = {
   generateMazeKruskal,

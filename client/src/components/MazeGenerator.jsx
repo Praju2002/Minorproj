@@ -21,6 +21,7 @@ const MazeGenerator = () => {
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [mazeKey, setMazeKey] = useState(0); // State to force remount of Maze components
   const [renderingPath, setRenderingPath] = useState(false); // New state to manage path rendering
+  const [reportData, setReportData] = useState(null); // State to hold report data
 
   useEffect(() => {
     if (isGenerating) {
@@ -103,6 +104,20 @@ const MazeGenerator = () => {
     }
   };
 
+  const fetchReport = () => {
+    fetch('http://localhost:3003/api/generate-report')
+      .then(response => response.json())
+      .then(data => {
+        console.log('Report fetched:', data);
+        setReportData(data); // Set the report data in state
+      })
+      .catch(error => {
+        console.error('Failed to fetch report:', error);
+        setErrorMessage('Failed to fetch report.');
+        setOpenSnackbar(true);
+      });
+  };
+
   const handleCloseSnackbar = () => {
     setOpenSnackbar(false);
     setErrorMessage(''); // Clear error message after closing the Snackbar
@@ -156,6 +171,21 @@ const MazeGenerator = () => {
       >
         {isGenerating ? 'Generating Maze...' : 'Generate Maze'}
       </Button>
+      <Button 
+        onClick={fetchReport} 
+        variant="contained" 
+        sx={{ 
+          backgroundColor: purple[200], color: "#ffffff",
+          '&:hover': { backgroundColor: purple[100] },
+          fontFamily: 'times new roman',
+          borderRadius: 2,
+          padding: '10px 20px',
+          marginBottom: 4,
+          marginLeft: 10,
+        }}
+      >
+        Fetch Report
+      </Button>
       <Box sx={{ display: "flex", justifyContent: "space-around", flexDirection: "row", alignItems: "flex-start" }}>
         <Box sx={{ display: "flex", flexDirection: "column", alignItems: 'center' }}>
           <Typography variant="h4" sx={{ color: purple[800], marginBottom: 2 }}>
@@ -194,6 +224,55 @@ const MazeGenerator = () => {
             <Typography>Number of Visited Intersections: {performanceMetricsPrim.numVisitedIntersections}</Typography>
             <Typography>Number of Visited Dead Ends: {performanceMetricsPrim.numVisitedDeadEnds}</Typography>
           </Box>
+        )}
+        {reportData && (
+          <Box sx={{ backgroundColor: pink[100], padding: 2, borderRadius: 2, boxShadow: 3 }}>
+          <Typography variant="h6" sx={{ color: purple[700], marginBottom: 1 }}>
+            Maze Generation Report
+          </Typography>
+          {reportData && (
+            <div>
+              <Typography variant="subtitle1" sx={{ marginBottom: 1 }}>
+                Prim Algorithm:
+              </Typography>
+              <Typography variant="body1" sx={{ marginBottom: 0.5 }}>
+                Average Number of Intersections: {reportData.Prim.numIntersections.toFixed(2)}
+              </Typography>
+              <Typography variant="body1" sx={{ marginBottom: 0.5 }}>
+                Average Number of Dead Ends: {reportData.Prim.numDeadEnds.toFixed(2)}
+              </Typography>
+              <Typography variant="body1" sx={{ marginBottom: 0.5 }}>
+                Average Number of Steps: {reportData.Prim.numSteps.toFixed(2)}
+              </Typography>
+              <Typography variant="body1" sx={{ marginBottom: 0.5 }}>
+                Average Number of Visited Intersections: {reportData.Prim.numVisitedIntersections.toFixed(2)}
+              </Typography>
+              <Typography variant="body1" sx={{ marginBottom: 0.5 }}>
+                Average Number of Visited Dead Ends: {reportData.Prim.numVisitedDeadEnds.toFixed(2)}
+              </Typography>
+              
+              <Typography variant="subtitle1" sx={{ marginBottom: 1, marginTop: 2 }}>
+                Kruskal Algorithm:
+              </Typography>
+              <Typography variant="body1" sx={{ marginBottom: 0.5 }}>
+                Average Number of Intersections: {reportData.Kruskal.numIntersections.toFixed(2)}
+              </Typography>
+              <Typography variant="body1" sx={{ marginBottom: 0.5 }}>
+                Average Number of Dead Ends: {reportData.Kruskal.numDeadEnds.toFixed(2)}
+              </Typography>
+              <Typography variant="body1" sx={{ marginBottom: 0.5 }}>
+                Average Number of Steps: {reportData.Kruskal.numSteps.toFixed(2)}
+              </Typography>
+              <Typography variant="body1" sx={{ marginBottom: 0.5 }}>
+                Average Number of Visited Intersections: {reportData.Kruskal.numVisitedIntersections.toFixed(2)}
+              </Typography>
+              <Typography variant="body1" sx={{ marginBottom: 0.5 }}>
+                Average Number of Visited Dead Ends: {reportData.Kruskal.numVisitedDeadEnds.toFixed(2)}
+              </Typography>
+            </div>
+          )}
+        </Box>
+        
         )}
       </Box>
       <Snackbar open={openSnackbar} autoHideDuration={5000} onClose={handleCloseSnackbar}>
