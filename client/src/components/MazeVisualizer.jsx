@@ -138,9 +138,7 @@ function MazeVisualizer() {
       </Box>
       <Box sx={{ display: "flex", justifyContent: "space-around", flexDirection: "row", alignItems: "flex-start" }}>
         <Box sx={{ display: "flex", flexDirection: "column", alignItems: 'center' }}>
-          <Typography variant="h4" sx={{ color: purple[800], marginBottom: 2 }}>
-            Generated Maze
-          </Typography>
+          
           {maze.length > 0 && <Maze maze={maze} />}
         </Box>
       </Box>

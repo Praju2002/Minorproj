@@ -4,6 +4,7 @@ import "./maze.css";
 
 function Maze({ maze, path, timeDelay, showDeadEndCounter = false }) {
   const svgRef = useRef();
+  const containerRef = useRef();
   const [visitedDeadEndCount, setVisitedDeadEndCount] = useState(0);
   const cellSize = 20;
   const visitedDeadEnds = useRef(new Set());
@@ -16,7 +17,7 @@ function Maze({ maze, path, timeDelay, showDeadEndCounter = false }) {
     if ((cell & 4) !== 0 && c > 0) exits++; // Left
     if ((cell & 8) !== 0 && c < maze[0].length - 1) exits++; // Right
     return exits === 1;
-  };6
+  };
 
   useEffect(() => {
     if (!maze || maze.length === 0) {
@@ -26,13 +27,14 @@ function Maze({ maze, path, timeDelay, showDeadEndCounter = false }) {
     const svg = d3.select(svgRef.current);
     svg.selectAll("*").remove();
 
-    const width = Math.min(window.innerWidth, maze[0].length * cellSize);
-    const height = Math.min(window.innerHeight - 100, maze.length * cellSize);
+    // The dimensions of the SVG are determined here to avoid dynamic sizing for this component
+    const fixedWidth = maze[0].length * cellSize;
+    const fixedHeight = maze.length * cellSize;
 
     svg
-      .attr("viewBox", `0 0 ${maze[0].length * cellSize} ${maze.length * cellSize}`)
-      .attr("width", width)
-      .attr("height", height)
+      .attr("viewBox", `0 0 ${fixedWidth} ${fixedHeight}`)
+      .attr("width", fixedWidth)
+      .attr("height", fixedHeight)
       .attr("preserveAspectRatio", "xMidYMid meet");
 
     const mazeGroup = svg.append("g").attr("class", "maze-group");
@@ -161,7 +163,7 @@ function Maze({ maze, path, timeDelay, showDeadEndCounter = false }) {
   }
 
   return (
-    <div className="maze-container">
+    <div className="maze-container" ref={containerRef}>
       <svg ref={svgRef} />
       {showDeadEndCounter && (
         <div className="visited-dead-end-counter">Visited Dead Ends: {visitedDeadEndCount}</div>

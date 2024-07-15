@@ -2,13 +2,16 @@
 
 .maze-container {
   display: grid;
+  position: relative;
   gap: 0px;
+  align-items: center;
+  height: auto;
   background-color: #f0f4f8; /* Light background for the maze container */
   padding: 20px; /* Added more padding for spacing */
   border-radius: 10px; /* Rounded corners for a softer look */
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Added shadow for depth */
   text-align: center; /* Centered the text inside the container */
-  max-width: 100%; /* Ensures the maze container doesn't overflow */
+  width: 100%; /* Ensures the maze container doesn't overflow */
   overflow: hidden; /* Hides overflow content */
 }
 
@@ -71,4 +74,8 @@
 
 .maze-group circle[fill="red"] {
   cursor: pointer; /* Pointer cursor for end */
+}
+.maze-container svg {
+  width: 100%;
+  height: auto;
 }
