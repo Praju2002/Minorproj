@@ -8,6 +8,8 @@ const MazeGenerator = () => {
   const [mazePrim, setMazePrim] = useState([]);
   const [pathKruskal, setPathKruskal] = useState([]);
   const [pathPrim, setPathPrim] = useState([]);
+  const [finalPathKruskal, setFinalPathKruskal] = useState([]);
+  const [finalPathPrim, setFinalPathPrim] = useState([]);
   const [isGenerating, setIsGenerating] = useState(false);
   const [performanceMetricsKruskal, setPerformanceMetricsKruskal] = useState(null);
   const [performanceMetricsPrim, setPerformanceMetricsPrim] = useState(null);
@@ -33,6 +35,8 @@ const MazeGenerator = () => {
           setPathKruskal(data.metricsKruskal.path);
           setMazePrim(data.mazePrim);
           setPathPrim(data.metricsPrim.path);
+          setFinalPathKruskal(data.finalPathKruskal);
+          setFinalPathPrim(data.finalPathPrim);
           setPerformanceMetricsKruskal(data.metricsKruskal);
           setPerformanceMetricsPrim(data.metricsPrim);
           setMazeKey(prevKey => prevKey + 1); 
@@ -50,6 +54,7 @@ const MazeGenerator = () => {
 
   useEffect(() => {
     if (renderingPath) {
+      
       const timer = setTimeout(() => {
         setRenderingPath(false); 
       }, Number(timeDelay) * (pathKruskal.length + pathPrim.length)); 
@@ -190,7 +195,7 @@ const MazeGenerator = () => {
     <Typography variant="h4" sx={{ color: purple[800], marginBottom: 2 }}>
       Kruskal's Algorithm Maze
     </Typography>
-    {mazeKruskal.length > 0 && <Maze key={`${mazeKey}-kruskal`} maze={mazeKruskal} path={pathKruskal} timeDelay={timeDelay} showDeadEndCounter />}
+    {mazeKruskal.length > 0 && <Maze key={`${mazeKey}-kruskal`} maze={mazeKruskal} path={pathKruskal}  finalPath={finalPathKruskal}timeDelay={timeDelay} showDeadEndCounter />}
     {performanceMetricsKruskal && (
       <Box sx={{ backgroundColor: pink[100], padding: 2, borderRadius: 2, boxShadow: 3, marginTop: 2,textAlign:"left" }}>
         <Typography variant="h6" sx={{ color: purple[700], marginBottom: 1 }}>
@@ -208,7 +213,7 @@ const MazeGenerator = () => {
     <Typography variant="h4" sx={{ color: purple[800], marginBottom: 2 }}>
       Prim's Algorithm Maze
     </Typography>
-    {mazePrim.length > 0 && <Maze key={`${mazeKey}-prim`} maze={mazePrim} path={pathPrim} timeDelay={timeDelay} showDeadEndCounter />}
+    {mazePrim.length > 0 && <Maze key={`${mazeKey}-prim`} maze={mazePrim} path={pathPrim} finalPath={finalPathPrim} timeDelay={timeDelay} showDeadEndCounter />}
     {performanceMetricsPrim && (
       <Box sx={{ backgroundColor: pink[100], padding: 2, borderRadius: 2, boxShadow: 3, marginTop: 2,textAlign:"left" }}>
         <Typography variant="h6" sx={{ color: purple[700], marginBottom: 1 }}>

@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import * as d3 from "d3";
 import "./maze.css";
 
-function Maze({ maze, path, timeDelay, showDeadEndCounter = false }) {
+function Maze({ maze, path, finalPath, timeDelay, showDeadEndCounter = false }) {
   const svgRef = useRef();
   const containerRef = useRef();
   const [visitedDeadEndCount, setVisitedDeadEndCount] = useState(0);
@@ -27,7 +27,6 @@ function Maze({ maze, path, timeDelay, showDeadEndCounter = false }) {
     const svg = d3.select(svgRef.current);
     svg.selectAll("*").remove();
 
-    
     const fixedWidth = maze[0].length * cellSize;
     const fixedHeight = maze.length * cellSize;
 
@@ -39,6 +38,7 @@ function Maze({ maze, path, timeDelay, showDeadEndCounter = false }) {
 
     const mazeGroup = svg.append("g").attr("class", "maze-group");
 
+    // Draw the maze walls
     maze.forEach((row, rowIndex) => {
       row.forEach((cell, colIndex) => {
         const x = colIndex * cellSize;
@@ -87,7 +87,7 @@ function Maze({ maze, path, timeDelay, showDeadEndCounter = false }) {
       });
     });
 
-    
+    // Draw the start and end points
     const startPoint = [0, 0]; 
     const endPoint = [maze.length - 1, maze[0].length - 1];
 
@@ -111,7 +111,7 @@ function Maze({ maze, path, timeDelay, showDeadEndCounter = false }) {
       .append("title")
       .text("End");
 
-    
+    // Function to render the path step-by-step
     const renderPathSlowly = (path, color, strokeWidth) => {
       return new Promise((resolve) => {
         const pathGroup = svg.append("g").attr("class", "path-group");
@@ -137,7 +137,7 @@ function Maze({ maze, path, timeDelay, showDeadEndCounter = false }) {
                 .attr("stroke-width", strokeWidth);
             }
 
-           
+            // Check for dead-ends
             const cellKey = `${point[0]}-${point[1]}`;
             if (isDeadEnd(point[0], point[1]) && !visitedDeadEnds.current.has(cellKey)) {
               visitedDeadEnds.current.add(cellKey); 
@@ -152,11 +152,46 @@ function Maze({ maze, path, timeDelay, showDeadEndCounter = false }) {
       });
     };
 
+    // Function to render the final path in red
+    const renderFinalPath = (finalPath, color, strokeWidth) => {
+      // Remove the blue path before rendering the red path
+      svg.select(".path-group").remove(); 
+
+      const pathGroup = svg.append("g").attr("class", "final-path-group");
+    
+      finalPath.forEach((point, index) => {
+        const [x, y] = [point[1] * cellSize + cellSize / 2, point[0] * cellSize + cellSize / 2];
+    
+        pathGroup.append("circle")
+          .attr("cx", x)
+          .attr("cy", y)
+          .attr("r", 2)
+          .attr("fill", color);
+    
+        if (index < finalPath.length - 1) {
+          const nextPoint = finalPath[index + 1];
+          const [nextX, nextY] = [nextPoint[1] * cellSize + cellSize / 2, nextPoint[0] * cellSize + cellSize / 2];
+          pathGroup.append("line")
+            .attr("x1", x)
+            .attr("y1", y)
+            .attr("x2", nextX)
+            .attr("y2", nextY)
+            .attr("stroke", color)
+            .attr("stroke-width", strokeWidth);
+        }
+      });
+    };
+
+    // Render the initial path and then the final path in red
     if (path && path.length > 0) {
-      renderPathSlowly(path, "blue", 2);
+      renderPathSlowly(path, "blue", 2).then(() => {
+        if (finalPath && finalPath.length > 0) {
+          renderFinalPath(finalPath, "red", 2);
+        }
+      });
     }
 
-  }, [maze, path, timeDelay]);
+  }, [maze, path, finalPath, timeDelay]);
 
   if (!maze || maze.length === 0) {
     return <div>No maze data available.</div>;

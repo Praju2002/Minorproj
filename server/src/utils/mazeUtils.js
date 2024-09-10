@@ -1,7 +1,6 @@
 const { UnionFind } = require("./unionFind");
 const { connectDB } = require("../../db");
 
-
 function shuffleArray(array) {
   for (let i = array.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -24,7 +23,6 @@ async function storeMetricsInDB(metrics, algorithm) {
   await collection.insertOne({ ...metrics, algorithm, createdAt: new Date() });
 }
 
-
 async function calculateMetrics(maze, algorithm) {
   if (!maze || !Array.isArray(maze) || maze.length === 0 || !Array.isArray(maze[0])) {
     throw new Error('Invalid maze input');
@@ -45,7 +43,7 @@ async function calculateMetrics(maze, algorithm) {
     }
   }
 
-  const { numSteps, numVisitedIntersections, numVisitedDeadEnds, path, backtrackPath } = heuristicDFS(maze);
+  const { numSteps, numVisitedIntersections, numVisitedDeadEnds, path, finalPathStack, backtrackPath } = heuristicDFS(maze);
 
   const metrics = {
     numIntersections,
@@ -54,6 +52,7 @@ async function calculateMetrics(maze, algorithm) {
     numVisitedIntersections,
     numVisitedDeadEnds,
     path,
+    finalPathStack, // Include finalPathStack here
     backtrackPath 
   };
 
@@ -62,13 +61,11 @@ async function calculateMetrics(maze, algorithm) {
   return metrics;
 }
 
-
 async function generateMazeKruskal(rows, cols) {
   const maze = Array.from({ length: rows }, () => Array(cols).fill(0));
   const walls = [];
   const steps = [];
 
-  
   for (let r = 0; r < rows; r++) {
     for (let c = 0; c < cols; c++) {
       if (r < rows - 1) walls.push([r, c, r + 1, c]);
@@ -79,7 +76,6 @@ async function generateMazeKruskal(rows, cols) {
   shuffleArray(walls);
   const uf = new UnionFind(rows * cols);
 
-  
   for (const [r1, c1, r2, c2] of walls) {
     const cell1 = r1 * cols + c1;
     const cell2 = r2 * cols + c2;
@@ -93,9 +89,9 @@ async function generateMazeKruskal(rows, cols) {
   }
   
   const metrics = await calculateMetrics(maze, 'Kruskal');
-  return { maze, steps, ...metrics };
+  console.log("Final path stack for Kruskal:", metrics.finalPathStack);
+  return { maze, steps, finalPathStack: metrics.finalPathStack, ...metrics }; // Return finalPathStack
 }
-
 
 function addWalls(r, c, walls, visited, rows, cols) {
   if (r > 0 && !visited[r - 1][c]) walls.push([r, c, r - 1, c]);
@@ -103,7 +99,6 @@ function addWalls(r, c, walls, visited, rows, cols) {
   if (c > 0 && !visited[r][c - 1]) walls.push([r, c, r, c - 1]);
   if (c < cols - 1 && !visited[r][c + 1]) walls.push([r, c, r, c + 1]);
 }
-
 
 async function generateMazePrim(rows, cols) {
   const maze = Array.from({ length: rows }, () => Array(cols).fill(0));
@@ -129,9 +124,9 @@ async function generateMazePrim(rows, cols) {
   }
   
   const metrics = await calculateMetrics(maze, 'Prim');
-  return { maze, steps, ...metrics };
+  console.log("Final path stack for Prim:", metrics.finalPathStack);
+  return { maze, steps, finalPathStack: metrics.finalPathStack, ...metrics }; // Return finalPathStack
 }
-
 
 function heuristicDFS(maze) {
   const rows = maze.length;
@@ -139,50 +134,68 @@ function heuristicDFS(maze) {
   const start = [0, 0];
   const end = [rows - 1, cols - 1];
   const stack = [[...start, 0]]; // Stack with [row, col, heuristic]
+  const finalPathStack = []; // This will track the final path (red line)
   const visited = Array.from({ length: rows }, () => Array(cols).fill(false));
   visited[0][0] = true;
   let numSteps = 0;
   let numVisitedIntersections = 0;
   let numVisitedDeadEnds = 0;
-  const path = [];
+  const path = []; // Full explored path for visualization (blue line)
   const backtrackPath = [];
+  const parent = {}; // Parent tracker to construct the final path
 
+  // Function to check if a cell is a dead end
   const isDeadEnd = (r, c) => {
     const cell = maze[r][c];
     let exits = 0;
-    if ((cell & 1) !== 0 && r > 0) exits++;
-    if ((cell & 2) !== 0 && r < rows - 1) exits++;
-    if ((cell & 4) !== 0 && c > 0) exits++;
-    if ((cell & 8) !== 0 && c < cols - 1) exits++;
-    return exits === 1;
+    if ((cell & 1) !== 0 && r > 0) exits++; // Check north
+    if ((cell & 2) !== 0 && r < rows - 1) exits++; // Check south
+    if ((cell & 4) !== 0 && c > 0) exits++; // Check west
+    if ((cell & 8) !== 0 && c < cols - 1) exits++; // Check east
+    return exits === 1; // Dead end if only one exit
   };
 
-  const heuristic = (r, c) => Math.abs(r - end[0]) + Math.abs(c - end[1]); // Manhattan distance
+  // Heuristic function: Manhattan distance
+  const heuristic = (r, c) => Math.abs(r - end[0]) + Math.abs(c - end[1]);
 
   while (stack.length > 0) {
     const current = stack.pop();
     const [r, c] = current;
-    path.push([r, c]);
+    path.push([r, c]); // Store the explored path for the blue line (full exploration)
     numSteps++;
     const cell = maze[r][c];
     const neighbors = getNeighbors(cell, r, c, rows, cols, visited);
 
-    if (neighbors.length > 2) numVisitedIntersections++;
-    if (isDeadEnd(r, c)) numVisitedDeadEnds++;
+    if (neighbors.length > 2) numVisitedIntersections++; // Intersection count
+    if (isDeadEnd(r, c)) numVisitedDeadEnds++; // Dead-end count
 
+    // If we reach the end, construct the final path
     if (r === end[0] && c === end[1]) {
-      return { numSteps, numVisitedIntersections, numVisitedDeadEnds, path, backtrackPath };
+      let [pr, pc] = [r, c];
+      while (pr !== 0 || pc !== 0) {
+        finalPathStack.push([pr, pc]);
+        [pr, pc] = parent[[pr, pc]]; // Track back using parent
+      }
+      finalPathStack.push(start); // Add the start position
+      return {
+        numSteps,
+        numVisitedIntersections,
+        numVisitedDeadEnds,
+        path, // Blue line path (full exploration)
+        finalPathStack: finalPathStack.reverse(), // Correct order from start to end
+        backtrackPath,
+      };
     }
 
     if (neighbors.length === 0) {
-      backtrackPath.push([r, c]);
+      backtrackPath.push([r, c]); // Track backtracked path
     }
 
     neighbors.forEach(([nr, nc]) => {
       if (!visited[nr][nc]) {
         visited[nr][nc] = true;
+        parent[[nr, nc]] = [r, c]; // Track the parent for each node
         const heuristicValue = heuristic(nr, nc);
-        // Insert neighbor maintaining sorted order
         let inserted = false;
         for (let i = stack.length - 1; i >= 0; i--) {
           if (stack[i][2] > heuristicValue) {
@@ -196,33 +209,46 @@ function heuristicDFS(maze) {
     });
   }
 
-  return { numSteps, numVisitedIntersections, numVisitedDeadEnds, path, backtrackPath };
+  return { 
+    numSteps, 
+    numVisitedIntersections, 
+    numVisitedDeadEnds, 
+    path, 
+    finalPathStack, 
+    backtrackPath 
+  };
+}
+
+// Helper function to get valid neighbors
+function getNeighbors(cell, r, c, rows, cols, visited) {
+  const neighbors = [];
+  if ((cell & 1) !== 0 && r > 0 && !visited[r - 1][c]) neighbors.push([r - 1, c]); // North
+  if ((cell & 2) !== 0 && r < rows - 1 && !visited[r + 1][c]) neighbors.push([r + 1, c]); // South
+  if ((cell & 4) !== 0 && c > 0 && !visited[r][c - 1]) neighbors.push([r, c - 1]); // West
+  if ((cell & 8) !== 0 && c < cols - 1 && !visited[r][c + 1]) neighbors.push([r, c + 1]); // East
+  return neighbors;
 }
 
 
 function getNeighbors(cell, r, c, rows, cols, visited) {
   const neighbors = [];
   if ((cell & 1) !== 0 && r > 0 && !visited[r - 1][c]) neighbors.push([r - 1, c]); 
-  if ((cell & 2) !== 0 && r < rows - 1 && !visited[r + 1][c]) neighbors.push([r + 1, c]);
+  if ((cell & 2) !== 0 && r < rows - 1 && !visited[r + 1][c]) neighbors.push([r + 1, c]); 
   if ((cell & 4) !== 0 && c > 0 && !visited[r][c - 1]) neighbors.push([r, c - 1]); 
   if ((cell & 8) !== 0 && c < cols - 1 && !visited[r][c + 1]) neighbors.push([r, c + 1]); 
-  
   return neighbors;
 }
 
-
 function countNeighbors(cell) {
-  let count = 0;
-  if (cell & 1) count++;
-  if (cell & 2) count++;
-  if (cell & 4) count++;
-  if (cell & 8) count++;
-  return count;
+  let neighbors = 0;
+  if ((cell & 1) !== 0) neighbors++; // Check if there's a neighbor to the north
+  if ((cell & 2) !== 0) neighbors++; // Check if there's a neighbor to the south
+  if ((cell & 4) !== 0) neighbors++; // Check if there's a neighbor to the west
+  if ((cell & 8) !== 0) neighbors++; // Check if there's a neighbor to the east
+  return neighbors;
 }
 
 module.exports = {
   generateMazeKruskal,
-  generateMazePrim,
-  calculateMetrics,
-  heuristicDFS
+  generateMazePrim
 };

@@ -21,9 +21,11 @@ router.get('/generate', async (req, res) => {
     res.json({
       mazeKruskal: kruskalResult.maze,
       stepsKruskal: kruskalResult.steps,
+      finalPathKruskal: kruskalResult.finalPathStack,  // Include final path stack for Kruskal
       metricsKruskal: kruskalResult,
       mazePrim: primResult.maze,
       stepsPrim: primResult.steps,
+      finalPathPrim: primResult.finalPathStack,  // Include final path stack for Prim
       metricsPrim: primResult,
     });
   } catch (error) {
@@ -31,6 +33,7 @@ router.get('/generate', async (req, res) => {
     res.status(500).json({ error: 'Error generating mazes.' });
   }
 });
+
 
 
 router.get('/generate-maze-step-by-step', async (req, res) => {
@@ -51,6 +54,7 @@ router.get('/generate-maze-step-by-step', async (req, res) => {
 
     res.json({
       steps: result.steps,
+      finalPath: result.finalPathStack,  // Include the final path solution
       metrics: result,
     });
   } catch (error) {
@@ -58,6 +62,7 @@ router.get('/generate-maze-step-by-step', async (req, res) => {
     res.status(500).json({ message: 'Error generating maze.', error });
   }
 });
+
 
 
 router.get('/generate-report', async (req, res) => {
