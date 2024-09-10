@@ -19,9 +19,9 @@ const MazeGenerator = () => {
   const [timeDelayError, setTimeDelayError] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [openSnackbar, setOpenSnackbar] = useState(false);
-  const [mazeKey, setMazeKey] = useState(0); // State to force remount of Maze components
-  const [renderingPath, setRenderingPath] = useState(false); // New state to manage path rendering
-  const [reportData, setReportData] = useState(null); // State to hold report data
+  const [mazeKey, setMazeKey] = useState(0); 
+  const [renderingPath, setRenderingPath] = useState(false); 
+  const [reportData, setReportData] = useState(null);
 
   useEffect(() => {
     if (isGenerating) {
@@ -35,8 +35,8 @@ const MazeGenerator = () => {
           setPathPrim(data.metricsPrim.path);
           setPerformanceMetricsKruskal(data.metricsKruskal);
           setPerformanceMetricsPrim(data.metricsPrim);
-          setMazeKey(prevKey => prevKey + 1); // Update the key to force remount
-          setRenderingPath(true); // Set to true while path is rendering
+          setMazeKey(prevKey => prevKey + 1); 
+          setRenderingPath(true); 
           setIsGenerating(false);
         })
         .catch(error => {
@@ -50,12 +50,11 @@ const MazeGenerator = () => {
 
   useEffect(() => {
     if (renderingPath) {
-      // Code to manage path rendering and resetting `renderingPath`
       const timer = setTimeout(() => {
-        setRenderingPath(false); // Reset after rendering
-      }, Number(timeDelay) * (pathKruskal.length + pathPrim.length)); // Adjust based on path length
+        setRenderingPath(false); 
+      }, Number(timeDelay) * (pathKruskal.length + pathPrim.length)); 
 
-      return () => clearTimeout(timer); // Clear timeout if component unmounts
+      return () => clearTimeout(timer); 
     }
   }, [renderingPath, pathKruskal.length, pathPrim.length, timeDelay]);
 
@@ -98,8 +97,8 @@ const MazeGenerator = () => {
       setErrorMessage('Please fix the errors before generating the maze.');
       setOpenSnackbar(true);
     } else {
-      setErrorMessage(''); // Clear any previous errors
-      setOpenSnackbar(false); // Close the Snackbar
+      setErrorMessage(''); 
+      setOpenSnackbar(false); 
       setIsGenerating(true);
     }
   };
@@ -109,7 +108,7 @@ const MazeGenerator = () => {
       .then(response => response.json())
       .then(data => {
         console.log('Report fetched:', data);
-        setReportData(data); // Set the report data in state
+        setReportData(data); 
       })
       .catch(error => {
         console.error('Failed to fetch report:', error);
@@ -120,7 +119,7 @@ const MazeGenerator = () => {
 
   const handleCloseSnackbar = () => {
     setOpenSnackbar(false);
-    setErrorMessage(''); // Clear error message after closing the Snackbar
+    setErrorMessage(''); 
   };
 
   return (
@@ -154,7 +153,7 @@ const MazeGenerator = () => {
         helperText={timeDelayError}
         sx={{ marginRight: 2 }}
         inputProps={{ min: 10, max: 2000 }}
-        disabled={isGenerating || renderingPath} // Disable while generating or rendering path
+        disabled={isGenerating || renderingPath} 
       />
       <Button 
         onClick={startGeneration} 
@@ -231,7 +230,7 @@ const MazeGenerator = () => {
         Maze Generation Report
       </Typography>
       <div>
-        <Typography variant="subtitle1" sx={{ marginBottom: 1 }}>
+        <Typography variant="h6" sx={{ marginBottom: 1 }}>
           Prim Algorithm:
         </Typography>
         <Typography variant="body1" sx={{ marginBottom: 0.5 }}>
@@ -250,7 +249,7 @@ const MazeGenerator = () => {
           Average Number of Visited Dead Ends: {reportData.Prim.numVisitedDeadEnds.toFixed(2)}
         </Typography>
 
-        <Typography variant="subtitle1" sx={{ marginBottom: 1, marginTop: 2 }}>
+        <Typography variant="h6" sx={{ marginBottom: 1, marginTop: 2 }}>
           Kruskal Algorithm:
         </Typography>
         <Typography variant="body1" sx={{ marginBottom: 0.5 }}>

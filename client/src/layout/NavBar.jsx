@@ -38,9 +38,9 @@ export default function NavBar() {
           </Button>
         </Toolbar>
       </AppBar>
-      {/* Add top padding to prevent content from being hidden behind the AppBar */}
+     
       <Box sx={{ mt: 8 }}>
-        {/* Your main content goes here */}
+        
       </Box>
     </>
   );

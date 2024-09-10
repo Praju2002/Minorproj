@@ -1,80 +1,65 @@
 /* maze.css */
 
 .maze-container {
-  display: grid;
-  position: relative;
-  gap: 0px;
+  display: flex;
+  flex-direction: column;
   align-items: center;
-  height: auto;
-  background-color: #f0f4f8; /* Light background for the maze container */
-  padding: 20px; /* Added more padding for spacing */
-  border-radius: 10px; /* Rounded corners for a softer look */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Added shadow for depth */
-  text-align: center; /* Centered the text inside the container */
-  width: 100%; /* Ensures the maze container doesn't overflow */
-  overflow: hidden; /* Hides overflow content */
+  justify-content: center;
+  background-color: #ffffff; 
+  padding: 30px; 
+  border-radius: 15px; 
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); 
+  width: 100%;
+  overflow: hidden; 
 }
 
 .visited-dead-end-counter {
-  margin-top: 10px; /* Spacing between the maze and the counter */
-  font-size: 16px; /* Slightly larger font for better readability */
-  font-weight: bold; /* Bold text for emphasis */
-  color: #333; /* Darker color for better contrast */
-  background-color: #fefefe; /* Light background for the counter */
-  border: 2px solid #ccc; /* Border around the counter */
-  border-radius: 5px; /* Rounded corners for the counter */
-  padding: 5px 10px; /* Padding inside the counter */
-  display: inline-block; /* Inline-block to fit text content */
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+  margin-top: 20px;
+  font-size: 18px;
+  font-weight: bold;
+  color: #333; 
+  background-color: #d4d2d4; 
+  border: 2px solid #ccc; 
+  border-radius: 10px; 
+  padding: 10px 20px; 
+  display: inline-block;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1); 
 }
 
 .maze-group line {
-  transition: stroke 0.3s ease; /* Smooth transition for wall changes */
+  transition: stroke 0.3s ease; 
+  stroke: #000000;
+  stroke-width: 2;
 }
 
 .path-group circle {
-  transition: fill 0.3s ease; /* Smooth transition for path circle colors */
+  transition: fill 0.3s ease; 
+  fill: #2196f3; 
 }
 
 .path-group line {
-  transition: stroke 0.3s ease; /* Smooth transition for path line colors */
+  transition: stroke 0.3s ease;
+  stroke: #2196f3;
+  stroke-width: 2;
 }
 
-.maze-cell {
-  width: 20px;
-  height: 20px;
-  background-color: #ffffff;
-  border: 1px solid #ddd; /* Light border for cells */
-  border-radius: 3px; /* Rounded corners for cells */
-}
-
-.maze-cell.wall {
-  background-color: #333333; /* Darker color for walls */
-  border: none; /* Remove border for walls */
-}
-
-/* Added styles for start and end markers */
 .maze-group circle {
-  transition: fill 0.3s ease, stroke 0.3s ease; /* Smooth transition for marker colors */
-}
-
-.maze-group circle:hover {
-  fill: #00ff00; /* Change color on hover for start */
-  stroke: #004d00; /* Darker stroke on hover for start */
-}
-
-.maze-group circle:hover.title {
-  fill: #ff0000; /* Change color on hover for end */
-  stroke: #cc0000; /* Darker stroke on hover for end */
+  transition: fill 0.3s ease, stroke 0.3s ease;
 }
 
 .maze-group circle[fill="green"] {
-  cursor: pointer; /* Pointer cursor for start */
+  cursor: pointer; 
 }
 
 .maze-group circle[fill="red"] {
-  cursor: pointer; /* Pointer cursor for end */
+  cursor: pointer; 
 }
+
+.maze-group circle:hover {
+  fill: #ff5722; 
+  stroke: #e64a19; 
+}
+
 .maze-container svg {
   width: 100%;
   height: auto;

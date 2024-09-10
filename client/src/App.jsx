@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { ThemeProvider, CssBaseline } from '@mui/material';
 import theme from './theme/theme';
 import RootLayout from './layout/RootLayout';
-// import Homepage from './pages/HomePage';
+
 import MazeGenerator from './components/MazeGenerator';
 import MazeVisualizer from './components/MazeVisualizer';
 

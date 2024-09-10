@@ -23,7 +23,7 @@ function analyzeMetrics(data, algorithms) {
 
   algorithms.forEach(algorithm => {
     const algoMetrics = data.filter(item => item.algorithm === algorithm);
-    console.log(`Metrics for ${algorithm}:`, algoMetrics); // Debugging log
+    console.log(`Metrics for ${algorithm}:`, algoMetrics); 
 
     if (algoMetrics.length > 0) {
       const avgMetrics = algoMetrics.reduce((acc, item) => {
@@ -49,11 +49,11 @@ function analyzeMetrics(data, algorithms) {
         numVisitedDeadEnds: avgMetrics.numVisitedDeadEnds / algoMetrics.length
       };
     } else {
-      results[algorithm] = null; // No data for this algorithm
+      results[algorithm] = null;
     }
   });
 
-  console.log('Analyzed Metrics:', results); // Debugging log
+  console.log('Analyzed Metrics:', results); 
   return results;
 }
 
@@ -67,7 +67,7 @@ async function generateReport(algorithms) {
     console.log('Report generated and saved as report.json');
   } catch (error) {
     console.error('Error generating report:', error);
-    throw error; // Optional: rethrow the error if needed for error handling
+    throw error; 
   }
 }
 

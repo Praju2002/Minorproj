@@ -5,7 +5,7 @@ const { generateReport } = require('../utils/reportUtils');
 const path = require('path');
 const fs = require('fs');
 
-// Endpoint to generate mazes using Kruskal's and Prim's algorithms
+
 router.get('/generate', async (req, res) => {
   const rows = parseInt(req.query.rows, 10);
   const cols = parseInt(req.query.cols, 10);
@@ -32,7 +32,7 @@ router.get('/generate', async (req, res) => {
   }
 });
 
-// Endpoint to generate a maze step-by-step for a specified algorithm
+
 router.get('/generate-maze-step-by-step', async (req, res) => {
   const { algorithm } = req.query;
   const rows = parseInt(req.query.rows, 10) || 20;
@@ -59,12 +59,12 @@ router.get('/generate-maze-step-by-step', async (req, res) => {
   }
 });
 
-// Endpoint to generate and serve a report comparing maze generation algorithms
+
 router.get('/generate-report', async (req, res) => {
   try {
-    await generateReport(['Prim', 'Kruskal']); // Generate the report for both algorithms
+    await generateReport(['Prim', 'Kruskal']); 
 
-    // Assuming generateReport generates 'report.json', read it and send its contents
+    
     const reportPath = path.join(__dirname, '../../report.json');
     const reportData = fs.readFileSync(reportPath, 'utf8');
     res.json(JSON.parse(reportData));

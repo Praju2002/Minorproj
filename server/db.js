@@ -5,8 +5,8 @@ const uri = process.env.MONGODB_URI;
 const dbName = process.env.DB_NAME;
 
 const client = new MongoClient(uri, {
-  serverSelectionTimeoutMS: 30000,  // Increase server selection timeout to 30 seconds
-  socketTimeoutMS: 45000,  // Increase socket timeout to 45 seconds
+  serverSelectionTimeoutMS: 30000, 
+  socketTimeoutMS: 45000,  
 });
 
 async function connectDB() {

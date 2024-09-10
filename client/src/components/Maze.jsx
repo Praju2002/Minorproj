@@ -12,10 +12,10 @@ function Maze({ maze, path, timeDelay, showDeadEndCounter = false }) {
   const isDeadEnd = (r, c) => {
     const cell = maze[r][c];
     let exits = 0;
-    if ((cell & 1) !== 0 && r > 0) exits++; // Top
-    if ((cell & 2) !== 0 && r < maze.length - 1) exits++; // Bottom
-    if ((cell & 4) !== 0 && c > 0) exits++; // Left
-    if ((cell & 8) !== 0 && c < maze[0].length - 1) exits++; // Right
+    if ((cell & 1) !== 0 && r > 0) exits++;
+    if ((cell & 2) !== 0 && r < maze.length - 1) exits++; 
+    if ((cell & 4) !== 0 && c > 0) exits++; 
+    if ((cell & 8) !== 0 && c < maze[0].length - 1) exits++; 
     return exits === 1;
   };
 
@@ -27,7 +27,7 @@ function Maze({ maze, path, timeDelay, showDeadEndCounter = false }) {
     const svg = d3.select(svgRef.current);
     svg.selectAll("*").remove();
 
-    // The dimensions of the SVG are determined here to avoid dynamic sizing for this component
+    
     const fixedWidth = maze[0].length * cellSize;
     const fixedHeight = maze.length * cellSize;
 
@@ -87,9 +87,9 @@ function Maze({ maze, path, timeDelay, showDeadEndCounter = false }) {
       });
     });
 
-    // Add start and end point markers
-    const startPoint = [0, 0]; // Starting point (row, column)
-    const endPoint = [maze.length - 1, maze[0].length - 1]; // Ending point (row, column)
+    
+    const startPoint = [0, 0]; 
+    const endPoint = [maze.length - 1, maze[0].length - 1];
 
     mazeGroup.append("circle")
       .attr("cx", startPoint[1] * cellSize + cellSize / 2)
@@ -111,7 +111,7 @@ function Maze({ maze, path, timeDelay, showDeadEndCounter = false }) {
       .append("title")
       .text("End");
 
-    // Function to render path with delay
+    
     const renderPathSlowly = (path, color, strokeWidth) => {
       return new Promise((resolve) => {
         const pathGroup = svg.append("g").attr("class", "path-group");
@@ -137,11 +137,11 @@ function Maze({ maze, path, timeDelay, showDeadEndCounter = false }) {
                 .attr("stroke-width", strokeWidth);
             }
 
-            // Check if the current cell is a dead end and hasn't been visited yet
+           
             const cellKey = `${point[0]}-${point[1]}`;
             if (isDeadEnd(point[0], point[1]) && !visitedDeadEnds.current.has(cellKey)) {
-              visitedDeadEnds.current.add(cellKey); // Mark cell as visited
-              setVisitedDeadEndCount(prevCount => prevCount + 1); // Increment visited dead end count
+              visitedDeadEnds.current.add(cellKey); 
+              setVisitedDeadEndCount(prevCount => prevCount + 1); 
             }
 
             if (index === path.length - 1) {
