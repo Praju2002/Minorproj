@@ -21,11 +21,11 @@ router.get('/generate', async (req, res) => {
     res.json({
       mazeKruskal: kruskalResult.maze,
       stepsKruskal: kruskalResult.steps,
-      finalPathKruskal: kruskalResult.finalPathStack,  // Include final path stack for Kruskal
+      finalPathKruskal: kruskalResult.finalPathStack,  
       metricsKruskal: kruskalResult,
       mazePrim: primResult.maze,
       stepsPrim: primResult.steps,
-      finalPathPrim: primResult.finalPathStack,  // Include final path stack for Prim
+      finalPathPrim: primResult.finalPathStack,  
       metricsPrim: primResult,
     });
   } catch (error) {
@@ -54,7 +54,7 @@ router.get('/generate-maze-step-by-step', async (req, res) => {
 
     res.json({
       steps: result.steps,
-      finalPath: result.finalPathStack,  // Include the final path solution
+      finalPath: result.finalPathStack,  
       metrics: result,
     });
   } catch (error) {

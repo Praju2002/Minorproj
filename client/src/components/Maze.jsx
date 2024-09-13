@@ -38,7 +38,6 @@ function Maze({ maze, path, finalPath, timeDelay, showDeadEndCounter = false }) 
 
     const mazeGroup = svg.append("g").attr("class", "maze-group");
 
-    // Draw the maze walls
     maze.forEach((row, rowIndex) => {
       row.forEach((cell, colIndex) => {
         const x = colIndex * cellSize;
@@ -87,7 +86,6 @@ function Maze({ maze, path, finalPath, timeDelay, showDeadEndCounter = false }) 
       });
     });
 
-    // Draw the start and end points
     const startPoint = [0, 0]; 
     const endPoint = [maze.length - 1, maze[0].length - 1];
 
@@ -111,7 +109,6 @@ function Maze({ maze, path, finalPath, timeDelay, showDeadEndCounter = false }) 
       .append("title")
       .text("End");
 
-    // Function to render the path step-by-step
     const renderPathSlowly = (path, color, strokeWidth) => {
       return new Promise((resolve) => {
         const pathGroup = svg.append("g").attr("class", "path-group");
@@ -137,7 +134,6 @@ function Maze({ maze, path, finalPath, timeDelay, showDeadEndCounter = false }) 
                 .attr("stroke-width", strokeWidth);
             }
 
-            // Check for dead-ends
             const cellKey = `${point[0]}-${point[1]}`;
             if (isDeadEnd(point[0], point[1]) && !visitedDeadEnds.current.has(cellKey)) {
               visitedDeadEnds.current.add(cellKey); 
@@ -152,9 +148,7 @@ function Maze({ maze, path, finalPath, timeDelay, showDeadEndCounter = false }) 
       });
     };
 
-    // Function to render the final path in red
     const renderFinalPath = (finalPath, color, strokeWidth) => {
-      // Remove the blue path before rendering the red path
       svg.select(".path-group").remove(); 
 
       const pathGroup = svg.append("g").attr("class", "final-path-group");
@@ -182,7 +176,6 @@ function Maze({ maze, path, finalPath, timeDelay, showDeadEndCounter = false }) 
       });
     };
 
-    // Render the initial path and then the final path in red
     if (path && path.length > 0) {
       renderPathSlowly(path, "blue", 2).then(() => {
         if (finalPath && finalPath.length > 0) {
