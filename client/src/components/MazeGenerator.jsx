@@ -108,8 +108,9 @@ const MazeGenerator = () => {
     }
   };
   const values = () => {
-    const k = 0;
-    const p = 0;
+    let k = 0;
+    let p = 0;
+    
     if (performanceMetricsKruskal.numIntersections > performanceMetricsPrim.numIntersections) {
       k = k + 1;
     } else {
