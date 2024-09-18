@@ -24,7 +24,7 @@ const MazeGenerator = () => {
   const [mazeKey, setMazeKey] = useState(0);
   const [renderingPath, setRenderingPath] = useState(false);
   const [reportData, setReportData] = useState(null);
-
+  const [finalVerdict, setFinalVerdict] = useState('');
   useEffect(() => {
     if (isGenerating) {
       fetch(`http://localhost:3003/api/generate?rows=${rows}&cols=${cols}`)
@@ -107,43 +107,42 @@ const MazeGenerator = () => {
       setIsGenerating(true);
     }
   };
-  const values = () => {
-    let k = 0;
-    let p = 0;
-    
-    if (performanceMetricsKruskal.numIntersections > performanceMetricsPrim.numIntersections) {
-      k = k + 1;
-    } else {
-      p = p + 1;
-    }
-    if (performanceMetricsKruskal.numDeadEnds > performanceMetricsPrim.numDeadEnds) {
-      k = k + 1;
-    } else {
-      p = p + 1;
-    }
-    if (performanceMetricsKruskal.numSteps > performanceMetricsPrim.numSteps) {
-      k = k + 1;
-    } else {
-      p = p + 1;
-    }
-    if (performanceMetricsKruskal.numVisitedDeadEnds > performanceMetricsPrim.numVisitedDeadEnds) {
-      k = k + 1;
-    } else {
-      p = p + 1;
-    }
-    if (performanceMetricsKruskal.numVisitedIntersections > performanceMetricsPrim.numVisitedIntersections) {
-      k = k + 1;
-    } else {
-      p = p + 1;
-    }
-  }
+  const calculateVerdict = () => {
+    let kruskalScore = 0;
+    let primScore = 0;
 
+    if (performanceMetricsKruskal.numIntersections > performanceMetricsPrim.numIntersections)
+      kruskalScore++;
+    else primScore++;
+
+    if (performanceMetricsKruskal.numDeadEnds > performanceMetricsPrim.numDeadEnds)
+      kruskalScore++;
+    else primScore++;
+
+    if (performanceMetricsKruskal.numSteps > performanceMetricsPrim.numSteps)
+      kruskalScore++;
+    else primScore++;
+
+    if (performanceMetricsKruskal.numVisitedDeadEnds > performanceMetricsPrim.numVisitedDeadEnds)
+      kruskalScore++;
+    else primScore++;
+
+    if (performanceMetricsKruskal.numVisitedIntersections > performanceMetricsPrim.numVisitedIntersections)
+      kruskalScore++;
+    else primScore++;
+
+    return kruskalScore > primScore
+      ? "Kruskal's algorithm generates a more complex maze."
+      : "Prim's algorithm generates a more complex maze.";
+  };
   const fetchReport = () => {
     fetch('http://localhost:3003/api/generate-report')
       .then(response => response.json())
       .then(data => {
         console.log('Report fetched:', data);
         setReportData(data);
+        const verdict = calculateVerdict();
+        setFinalVerdict(verdict);
       })
       .catch(error => {
         console.error('Failed to fetch report:', error);
@@ -208,6 +207,7 @@ const MazeGenerator = () => {
       <Button
         onClick={fetchReport}
         variant="contained"
+        disabled={!performanceMetricsKruskal || !performanceMetricsPrim}
         sx={{
           backgroundColor: purple[200],
           color: "#ffffff",
@@ -310,22 +310,19 @@ const MazeGenerator = () => {
               </div>
             </Box>
             <Box sx={{ marginTop: 4, textAlign: "center" }}>
-              <Typography variant="h5" sx={{ color: purple[800], marginBottom: 1 }}>
-                Final Verdict:
-              </Typography>
-              <Typography variant="body1">
-                {
-                  values.k < values.p
-                    ? "Kruskal's algorithm generates more complex maze."
-                    : "Prim's algorithm generates more complex maze"
-                }
-              </Typography>
+              {finalVerdict && (
+                <Box sx={{ marginTop: 4 }}>
+                  <Typography variant="h5" sx={{  marginBottom: 2 }}>
+                    Final Verdict: {finalVerdict}
+                  </Typography>
+                </Box>
+              )}
 
             </Box>
           </Box>
         )}
       </Box>
-
+      
       <Snackbar open={openSnackbar} autoHideDuration={5000} onClose={handleCloseSnackbar}>
         <Alert onClose={handleCloseSnackbar} severity={errorMessage ? 'error' : 'info'} sx={{ width: '100%' }}>
           {errorMessage}

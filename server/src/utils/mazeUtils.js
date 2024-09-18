@@ -247,19 +247,6 @@ function getNeighbors(cell, r, c, rows, cols, visited) {
   return neighbors;
 }
 
-function getNeighbors(cell, r, c, rows, cols, visited) {
-  const neighbors = [];
-  if ((cell & 1) !== 0 && r > 0 && !visited[r - 1][c])
-    neighbors.push([r - 1, c]);
-  if ((cell & 2) !== 0 && r < rows - 1 && !visited[r + 1][c])
-    neighbors.push([r + 1, c]);
-  if ((cell & 4) !== 0 && c > 0 && !visited[r][c - 1])
-    neighbors.push([r, c - 1]);
-  if ((cell & 8) !== 0 && c < cols - 1 && !visited[r][c + 1])
-    neighbors.push([r, c + 1]);
-  return neighbors;
-}
-
 function countNeighbors(cell) {
   let neighbors = 0;
   if ((cell & 1) !== 0) neighbors++; 
