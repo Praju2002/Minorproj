@@ -109,7 +109,7 @@ For questions, reach out at: **prajukhanal21@gmail.com**
 
 **© 2025 Maze Generator Project** 🎯  
 
-**📸 Add Images Below**  
+**📸**  
 ![Maze Generation and Solving](./client/src/assets/mazesolve.png)  
 ![Maze Report](./client/src/assets/report.png)  
 ![Maze Generation Stepwise](./client/src/assets/stepwise.png)  
