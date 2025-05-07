@@ -110,31 +110,38 @@ const MazeGenerator = () => {
   const calculateVerdict = () => {
     let kruskalScore = 0;
     let primScore = 0;
-
-    if (performanceMetricsKruskal.numIntersections > performanceMetricsPrim.numIntersections)
-      kruskalScore++;
-    else primScore++;
-
-    if (performanceMetricsKruskal.numDeadEnds > performanceMetricsPrim.numDeadEnds)
-      kruskalScore++;
-    else primScore++;
-
-    if (performanceMetricsKruskal.numSteps > performanceMetricsPrim.numSteps)
-      kruskalScore++;
-    else primScore++;
-
-    if (performanceMetricsKruskal.numVisitedDeadEnds > performanceMetricsPrim.numVisitedDeadEnds)
-      kruskalScore++;
-    else primScore++;
-
-    if (performanceMetricsKruskal.numVisitedIntersections > performanceMetricsPrim.numVisitedIntersections)
-      kruskalScore++;
-    else primScore++;
-
-    return kruskalScore > primScore
-      ? "Kruskal's algorithm generates a more complex maze."
-      : "Prim's algorithm generates a more complex maze.";
+  
+    const metrics = [
+      { key: "numIntersections", higherIsBetter: true },
+      { key: "numDeadEnds", higherIsBetter: true },
+      { key: "numSteps", higherIsBetter: true },
+      { key: "numVisitedIntersections", higherIsBetter: true },
+      { key: "numVisitedDeadEnds", higherIsBetter: true },
+    ];
+  
+    metrics.forEach(({ key, higherIsBetter }) => {
+      const kruskalVal = performanceMetricsKruskal[key];
+      const primVal = performanceMetricsPrim[key];
+  
+      if (kruskalVal === primVal) return;
+  
+      const kruskalWins = higherIsBetter
+        ? kruskalVal > primVal
+        : kruskalVal < primVal;
+  
+      if (kruskalWins) kruskalScore++;
+      else primScore++;
+    });
+  
+    if (kruskalScore > primScore) {
+      return "Kruskal's algorithm generates a more complex maze.";
+    } else if (primScore > kruskalScore) {
+      return "Prim's algorithm generates a more complex maze.";
+    } else {
+      return "Both algorithms generate mazes of similar complexity.";
+    }
   };
+  
   const fetchReport = () => {
     fetch('http://localhost:3003/api/generate-report')
       .then(response => response.json())
